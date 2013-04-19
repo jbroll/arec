@@ -15,17 +15,27 @@ proc iota { fr to { in 1 } } {
 
 ::tcltest::configure -testdir [file dirname [file normalize [info script]]] -singleproc 1 
 
-::tcltest::test rec-dtype-size  { dtype size     } -body { arec::type  size   }		  -result 44
+::tcltest::test rec-dtype-size  { dtype size     } -body { arec::type  size   }		  -result [arec::ARecTypeSize]
 ::tcltest::test rec-dtype-types { dtype types    } -body { arec::type types   }  	  -result {tclobj* long long long long long long long long long long}
 ::tcltest::test rec-dtype-types { dtype types    } -body { arec::type names   }  	  -result {name size align stype nfield afield fields set get shadow inst}
 ::tcltest::test rec-dtype-types { dtype types    } -body { arec::type fields  }  	  -result {tclobj* name long size long align long stype long nfield long afield long fields long set long get long shadow long inst}
 
 
+set Ps [arec::PtrSize]
+set Pa [arec::PtrAlign]
+set Ls [arec::LngSize]
+set La [arec::LngAlign]
+set Ds [arec::DblSize]
+set Da [arec::DblAlign]
+
 ::tcltest::test rec-dtype-size     { dtype size     } -body { arec::types length } 	  		   -result 10
 ::tcltest::test rec-dtype-types    { dtype types    } -body { arec::types 0 end get name  }  		   -result {char uchar short ushort int long float double string tclobj*}
-::tcltest::test rec-dtypes-get     { dtypes get     } -body { arec::types 0 end get     name size align } -result {{char 1 1} {uchar 1 1} {short 2 2} {ushort 2 2} {int 4 4} {long 4 4} {float 4 4} {double 8 4} {string 4 4} {tclobj* 4 4}}
-::tcltest::test rec-dtypes-getlist { dtypes getlist } -body { arec::types 0 end getlist name size align } -result {{char 1 1} {uchar 1 1} {short 2 2} {ushort 2 2} {int 4 4} {long 4 4} {float 4 4} {double 8 4} {string 4 4} {tclobj* 4 4}}
-::tcltest::test rec-dtypes-getdict { dtypes getdict } -body { arec::types 0 end getdict name size align } -result {{name char size 1 align 1} {name uchar size 1 align 1} {name short size 2 align 2} {name ushort size 2 align 2} {name int size 4 align 4} {name long size 4 align 4} {name float size 4 align 4} {name double size 8 align 4} {name string size 4 align 4} {name tclobj* size 4 align 4}}
+::tcltest::test rec-dtypes-get     { dtypes get     } -body { arec::types 0 end get     name size align
+	} -result [subst {{char 1 1} {uchar 1 1} {short 2 2} {ushort 2 2} {int 4 4} {long $Ls $La} {float 4 4} {double $Ds $Da} {string $Ps $Pa} {tclobj* $Ps $Pa}}]
+::tcltest::test rec-dtypes-getlist { dtypes getlist } -body { arec::types 0 end getlist name size align
+	} -result [subst {{char 1 1} {uchar 1 1} {short 2 2} {ushort 2 2} {int 4 4} {long $Ls $La} {float 4 4} {double $Ds $Da} {string $Ps $Pa} {tclobj* $Ps $Pa}}]
+::tcltest::test rec-dtypes-getdict { dtypes getdict } -body { arec::types 0 end getdict name size align
+	} -result [subst {{name char size 1 align 1} {name uchar size 1 align 1} {name short size 2 align 2} {name ushort size 2 align 2} {name int size 4 align 4} {name long size $Ls align $La} {name float size 4 align 4} {name double size $Ds align $Da} {name string size $Ps align $Pa} {name tclobj* size $Ps align $Pa}}]
 
 
 foreach type [arec::types 0 end get name] reply { 1 1 1 1 1 1 1.0 1.0 1 } {

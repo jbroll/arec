@@ -1,6 +1,8 @@
 #!/usr/bin/env tclkit8.6
 #
 
+#parray tcl_platform
+
 package require tcltest
 
 lappend auto_path lib ../lib

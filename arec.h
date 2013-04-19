@@ -55,12 +55,12 @@ typedef Tcl_Obj*  (*ARecGetFunc)(Tcl_Interp *ip, ARecTypePtr type,            vo
 
 typedef struct _ARecType {
     Tcl_Obj		*nameobj;
-    int		  	 size;
-    int		 	 align;
-    int		 	 stype;
+    long	  	 size;
+    long	 	 align;
+    long	 	 stype;
 
-    int		 	nfield;
-    int		 	afield;
+    long	 	nfield;
+    long	 	afield;
     struct _ARecField   *field;
 
     ARecSetFunc	set;
@@ -101,4 +101,9 @@ ARecType *ARecLookupType(Tcl_Obj *nameobj);
 typedef char *string;
 
 ARecField *ARecCreateType(Tcl_Obj *name);
+
+typedef struct arec_LngAlign { long   x; char y; } ARecLngAlign;
+typedef struct arec_PtrAlign { void  *x; char y; } ARecPtrAlign;
+typedef struct arec_DblAlign { double x; char y; } ARecDblAlign;
+
 

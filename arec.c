@@ -802,9 +802,6 @@ Tcl_Obj *ARecGetStruct(Tcl_Interp *ip, ARecType *type, void *recs, int m, int ob
     return result;
 }
 
-typedef struct _LngAlign { long	  x; char y; } LngAlign;
-typedef struct _DblAlign { double x; char y; } DblAlign;
-
 ARecType *ARecTypeAddType(ARecField *types, Tcl_Obj *nameobj, int size, int align, int stype, ARecSetFunc set, ARecGetFunc get)
 {
     ARecType *type;
@@ -850,8 +847,9 @@ void ARecInit(Tcl_Interp *ip) {
     Tcl_Obj *tclobjLong   = Tcl_NewStringObj("long", -1);
     Tcl_Obj *tclobjTclObj = Tcl_NewStringObj("tclobj*",-1);
 
-    int dalign = sizeof(DblAlign) - sizeof(double);
-    int lalign = sizeof(LngAlign) - sizeof(long);
+    int dalign = sizeof(ARecDblAlign) - sizeof(double);
+    int palign = sizeof(ARecPtrAlign) - sizeof(void*);
+    int lalign = sizeof(ARecLngAlign) - sizeof(long);
 
     ARecTypeType = ARecTypeCreate(ip, Tcl_NewStringObj("::arec::type", -1), AREC_STRUCT);
     ARecTypeType->size = sizeof(ARecType);
@@ -867,8 +865,8 @@ void ARecInit(Tcl_Interp *ip) {
     ARecTypeAddType(ARecTypeInst, tclobjLong,	                  sizeof(long)	  	, lalign, 0, ARecSetLong,	ARecGetLong   );
     ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("float",  -1), sizeof(float)	  	, 4,      0, ARecSetFloat,	ARecGetFloat  );
     ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("double", -1), sizeof(double)	, dalign, 0, ARecSetDouble, 	ARecGetDouble );
-    ARecTypeAddType(ARecTypeInst, tclobjString,	                  sizeof(char *)	, 4,      0, ARecSetString, 	ARecGetString );
-    ARecTypeAddType(ARecTypeInst, tclobjTclObj,		          sizeof(Tcl_Obj *)	, 4,      0, NULL         , 	ARecGetTclObj );
+    ARecTypeAddType(ARecTypeInst, tclobjString,	                  sizeof(char *)	, palign, 0, ARecSetString, 	ARecGetString );
+    ARecTypeAddType(ARecTypeInst, tclobjTclObj,		          sizeof(Tcl_Obj *)	, palign, 0, NULL         , 	ARecGetTclObj );
 
     ARecTypeType->size = 0;
 

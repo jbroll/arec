@@ -44,16 +44,18 @@ namespace eval arec {
 	extern int ARecDelInst();
     }
 
-#   critcl::cproc add_type { Tcl_Interp* ip Tcl_Obj* type int stype } Tcl_Obj* { 
-#	ARecTypeCreate(ip, type, stype);
-#
-#	return type;
-#    }
-
     critcl::ccommand add_type { data ip objc objv } { ARecTypeCreateObjCmd(ip, objc, objv); }
     critcl::cinit {
 	ARecInit(ip);
     } { }
+
+    critcl::cproc    ARecTypeSize {} long { return sizeof(ARecType); }
+    critcl::cproc    DblSize      {} long { return sizeof(double); }
+    critcl::cproc    LngSize      {} long { return sizeof(long); }
+    critcl::cproc    PtrSize      {} long { return sizeof(void*); }
+    critcl::cproc    DblAlign     {} long { return sizeof(ARecDblAlign) - sizeof(double); }
+    critcl::cproc    LngAlign     {} long { return sizeof(ARecLngAlign) - sizeof(long); }
+    critcl::cproc    PtrAlign     {} long { return sizeof(ARecPtrAlign) - sizeof(void*); }
 }
 
 package provide arec 1.0
