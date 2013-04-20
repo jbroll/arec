@@ -20,7 +20,9 @@ ARecField *ARecTypeInst = NULL;
 
 Tcl_Obj *ARecGetDouble(Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return Tcl_NewDoubleObj(*((double *) here)); }
 Tcl_Obj *ARecGetFloat( Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return Tcl_NewDoubleObj(*((float  *) here)); }
+Tcl_Obj *ARecGetULong(  Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return Tcl_NewLongObj(  *((unsigned long   *) here)); }
 Tcl_Obj *ARecGetLong(  Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return Tcl_NewLongObj(  *((long   *) here)); }
+Tcl_Obj *ARecGetUInt(  Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return Tcl_NewLongObj(  *((unsigned int  *) here)); }
 Tcl_Obj *ARecGetInt(   Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return Tcl_NewIntObj(   *((int    *) here)); }
 Tcl_Obj *ARecGetUShort(Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return Tcl_NewIntObj(   *((unsigned short *) here)); }
 Tcl_Obj *ARecGetShort( Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return Tcl_NewIntObj(   *((short  *) here)); }
@@ -38,7 +40,30 @@ int ARecSetFloat( Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int 
 
     return TCL_OK;
 }
-int ARecSetLong(  Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return Tcl_GetLongFromObj(  NULL, obj, (long   *) here); }
+int ARecSetULong(  Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
+    double value;
+
+    int ret = Tcl_GetDoubleFromObj(NULL, obj, &value);
+    *((unsigned long  *) here) = (unsigned long) value;
+
+    return ret;
+}
+int ARecSetLong(  Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
+    double value;
+
+    int ret = Tcl_GetDoubleFromObj(NULL, obj, &value);
+    *((long  *) here) = (long) value;
+
+    return ret;
+}
+int ARecSetUInt(  Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
+    double value;
+
+    int ret = Tcl_GetDoubleFromObj(NULL, obj, &value);
+    *((unsigned int *) here) = (unsigned int) value;
+
+    return ret;
+}
 int ARecSetInt(   Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
     double value;
 
@@ -845,7 +870,7 @@ void ARecInit(Tcl_Interp *ip) {
 
     Tcl_Obj *tclobjString = Tcl_NewStringObj("string", -1);
     Tcl_Obj *tclobjLong   = Tcl_NewStringObj("long", -1);
-    Tcl_Obj *tclobjTclObj = Tcl_NewStringObj("tclobj*",-1);
+    Tcl_Obj *tclobjTclObj = Tcl_NewStringObj("Tcl_Obj*",-1);
 
     int dalign = sizeof(ARecDblAlign) - sizeof(double);
     int palign = sizeof(ARecPtrAlign) - sizeof(void*);
@@ -862,7 +887,9 @@ void ARecInit(Tcl_Interp *ip) {
     ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("short",  -1), sizeof(short)	  	, 2,      0, ARecSetShort,	ARecGetShort  );
     ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("ushort", -1), sizeof(unsigned short), 2,      0, ARecSetUShort, 	ARecGetUShort );
     ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("int",    -1), sizeof(int)		, 4,      0, ARecSetInt,	ARecGetInt    );
+    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("uint",    -1), sizeof(unsigned int)	, 4,      0, ARecSetUInt,	ARecGetUInt    );
     ARecTypeAddType(ARecTypeInst, tclobjLong,	                  sizeof(long)	  	, lalign, 0, ARecSetLong,	ARecGetLong   );
+    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("ulong",  -1), sizeof(long)	  	, lalign, 0, ARecSetULong,	ARecGetULong   );
     ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("float",  -1), sizeof(float)	  	, 4,      0, ARecSetFloat,	ARecGetFloat  );
     ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("double", -1), sizeof(double)	, dalign, 0, ARecSetDouble, 	ARecGetDouble );
     ARecTypeAddType(ARecTypeInst, tclobjString,	                  sizeof(char *)	, palign, 0, ARecSetString, 	ARecGetString );

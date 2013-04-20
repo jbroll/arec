@@ -24,16 +24,20 @@ namespace eval arec {
 
     proc add-field { type args } { ::$::arec::type add-field $type {*}$args }
 
-    proc char   { args } { add-field char   {*}$args }
-    proc uchar  { args } { add-field uchar  {*}$args }
-    proc short  { args } { add-field short  {*}$args }
-    proc ushort { args } { add-field ushort {*}$args }
-    proc int    { args } { add-field int    {*}$args }
-    proc long   { args } { add-field long   {*}$args }
-    proc float  { args } { add-field float  {*}$args }
-    proc double { args } { add-field double {*}$args }
-    proc string { args } { add-field string {*}$args }
-    proc char*  { args } { add-field string {*}$args }
+    proc char     { args } { add-field char     {*}$args }
+    proc uchar    { args } { add-field uchar    {*}$args }
+    proc short    { args } { add-field short    {*}$args }
+    proc ushort   { args } { add-field ushort   {*}$args }
+    proc int      { args } { add-field int      {*}$args }
+    proc uint     { args } { add-field uint     {*}$args }
+    proc long     { args } { add-field long     {*}$args }
+    proc ulong    { args } { add-field ulong    {*}$args }
+    proc void*    { args } { add-field long     {*}$args }
+    proc float    { args } { add-field float    {*}$args }
+    proc double   { args } { add-field double   {*}$args }
+    proc string   { args } { add-field string   {*}$args }
+    proc char*    { args } { add-field string   {*}$args }
+    proc Tcl_Obj* { args } { add-field Tcl_Obj* {*}$args }
 
     critcl::ccode {
 	#include "arec.h"
