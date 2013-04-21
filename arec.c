@@ -349,7 +349,7 @@ int ARecInstObjCmd(data, ip, objc, objv)
     );
 
     ARecCmd(ip, inst, "getbytes", " ", objc == 2, objc, objv,
-	Tcl_SetByteArrayObj(result, inst->recs, inst->nrecs * inst->type->size);
+	Tcl_SetByteArrayObj(result, recs, m * inst->type->size);
 	return TCL_OK;
     );
     ARecCmd(ip, inst, "getptr", " ", objc == 2, objc, objv,
