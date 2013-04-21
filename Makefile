@@ -2,6 +2,8 @@
 arec32	= lib/arec/macosx-ix86/arec.dylib
 arec64	= lib/arec/macosx-x86_64/arec.dylib
 
+x32: $(arec32)
+
 all: $(arec32)  $(arec64)
 
 
@@ -18,7 +20,7 @@ $(arec64) : arec.c arec.h arec.tcl
 
 test : FORCE
 	arch -i386   /usr/local/bin/tclsh8.6 ./arec-test.tcl 
-	arch -x86_64 /usr/local/bin/tclsh8.6 ./arec-test.tcl
+	#arch -x86_64 /usr/local/bin/tclsh8.6 ./arec-test.tcl
 
 
 FORCE:

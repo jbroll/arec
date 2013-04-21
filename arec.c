@@ -113,6 +113,17 @@ int ARecSetString(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int 
 
     return TCL_OK;
 }
+int ARecSetTclObj(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
+    	Tcl_Obj *old = *((Tcl_Obj **)here);
+
+    if ( old ) { Tcl_DecrRefCount(old); }
+
+    *(Tcl_Obj **) here = obj;
+
+    if ( obj ) { Tcl_IncrRefCount(obj); }
+
+    return TCL_OK;
+}
 int ARecSetStruct(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
 
     return TCL_OK;
@@ -212,6 +223,8 @@ int ARecTypeObjCmd(data, ip, objc, objv)
 ARecType *ARecTypeCreate(Tcl_Interp *ip, Tcl_Obj *name, int stype)
 {
     ARecType *type = ARecTypeAddType(ARecTypeInst, name, 0, 1, stype, ARecSetStruct, ARecGetStruct);
+
+    //printf("Create a command %s\n", Tcl_GetString(name));
 
     Tcl_CreateObjCommand(ip, Tcl_GetString(name)
 	, ARecTypeObjCmd
@@ -500,9 +513,9 @@ void ARecTypeAddField1(ARecType *type, Tcl_Obj *nameobj, int length, ARecType *f
 
     for ( i = 0; i < type->nfield; i++ ) {
 	if ( type->stype == AREC_STRUCT ) {
-	    size = ARecPadd(size + type->field[i].type->size, type->field[i].type->align);
+	    size = ARecPadd(size + type->field[i].type->size*type->field[i].arecs, type->field[i].type->align);
 	} else {
-	    size = Max(size, ARecPadd(type->field[i].type->size, type->field[i].type->align));
+	    size = Max(size, type->field[i].type->size*type->field[i].arecs);
 	}
 
 	if ( type->field[i].type->align > maxx ) {
@@ -512,6 +525,7 @@ void ARecTypeAddField1(ARecType *type, Tcl_Obj *nameobj, int length, ARecType *f
 
     type->field[type->nfield].nameobj = nameobj;
     Tcl_IncrRefCount(nameobj);
+
 
     type->field[type->nfield].type   = field;
     type->field[type->nfield].nrecs  = length;
@@ -527,6 +541,8 @@ void ARecTypeAddField1(ARecType *type, Tcl_Obj *nameobj, int length, ARecType *f
 	size	= Max(size, ARecPadd(field->size*length, field->align));
     }
     type->size	= ARecPadd(size, maxx);
+
+    //printf("Add Field %s %s %d length : %d\n", Tcl_GetString(type->nameobj), Tcl_GetString(nameobj), type->size, length);
 
     type->nfield++;
     if ( type != type->shadow ) { memcpy(type->shadow, type, sizeof(ARecType)); }
@@ -893,7 +909,7 @@ void ARecInit(Tcl_Interp *ip) {
     ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("float",  -1), sizeof(float)	  	, 4,      0, ARecSetFloat,	ARecGetFloat  );
     ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("double", -1), sizeof(double)	, dalign, 0, ARecSetDouble, 	ARecGetDouble );
     ARecTypeAddType(ARecTypeInst, tclobjString,	                  sizeof(char *)	, palign, 0, ARecSetString, 	ARecGetString );
-    ARecTypeAddType(ARecTypeInst, tclobjTclObj,		          sizeof(Tcl_Obj *)	, palign, 0, NULL         , 	ARecGetTclObj );
+    ARecTypeAddType(ARecTypeInst, tclobjTclObj,		          sizeof(Tcl_Obj *)	, palign, 0, ARecSetTclObj, 	ARecGetTclObj );
 
     ARecTypeType->size = 0;
 

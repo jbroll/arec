@@ -9,9 +9,9 @@ namespace eval arec {
     proc typedef { args } {
 	set stype struct
 
-	      if { [llength $args] == 2 } { lassign $args        type body
-	} elseif { [llength $args] == 3 } { lassign $args stype  type body 
-	} elseif { [llength $args] == 4 } { lassign $args stype stype body type
+	      if { [llength $args] == 2 } { lassign $args       type body
+	} elseif { [llength $args] == 3 } { lassign $args stype type body 
+	} elseif { [llength $args] == 4 } { lassign $args stype junk body type
 	} else { error "too many args" }
 
 	set ::arec::prefix {}
