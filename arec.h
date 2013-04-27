@@ -4,8 +4,8 @@
 #define	AREC_ISLIST	1
 #define AREC_ASDICT	2
 
-#define AREC_STRUCT	3
-#define AREC_UNION	4
+#define AREC_STRUCT	0
+#define AREC_UNION	1
 
 #define ARecPadd(offset, align) ((offset + align - 1) & ~(align - 1))
 

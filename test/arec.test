@@ -1,6 +1,6 @@
 #!/usr/bin/env tclkit8.6
 #
-lappend auto_path ../lib lib
+#lappend auto_path ../lib
 
 package require tcltest
 package require arec
@@ -192,4 +192,64 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
 
 } -cleanup { rename blonk {}
 } -result {4.5}
+
+::tcltest::test union { union-get } -body {
+    arec::typedef union blink {
+	double a
+	int    b
+	double c
+    }
+
+    blink create blonk 1
+
+    blonk 0 set a 4.5
+    set 1 [blonk 0 get]
+
+    blonk 0 set b 4
+    set 2 [blonk 0 get]
+
+    list $1 $2
+
+} -cleanup { rename blonk {}
+} -result {4.5 4}
+
+::tcltest::test union { union-crunch } -body {
+    arec::typedef union blink {
+	char    c
+	int     i
+	short   s
+	long    l
+
+	uchar   uc
+	uint    ui
+	ushort  us
+	ulong   ul
+
+	float   f
+	double  d
+
+	char*    xchr
+	string   xstr
+	Tcl_Obj* xobj
+    }
+
+    blink create blonk 1
+
+    foreach i [iota 0 100] {
+	foreach type { c s i l uc us ui ul f d } {
+	    blonk 0 set $type 4
+	    blonk 0 set xchr foo
+	}
+	foreach type { c s i l uc us ui ul f d } {
+	    blonk 0 set $type 4
+	    blonk 0 set xstr foo
+	}
+	foreach type { c s i l uc us ui ul f d } {
+	    blonk 0 set $type 4
+	    blonk 0 set xobj foo
+	}
+    }
+
+} -cleanup { rename blonk {}
+} -result {}
 

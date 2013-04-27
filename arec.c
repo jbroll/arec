@@ -31,9 +31,21 @@ Tcl_Obj *ARecGetChar(  Tcl_Interp *ip, ARecType *type, void *here, int m, int ob
 Tcl_Obj *ARecGetString(Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return Tcl_NewStringObj(*((char  **) here), -1); }
 Tcl_Obj *ARecGetTclObj(Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return *((Tcl_Obj  **) here); }
 
-int ARecSetDouble(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return Tcl_GetDoubleFromObj(NULL, obj, (double *) here); }
+int ARecSetDouble(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
+    if ( !obj ) {
+	 *((double *)here) = 0.0;
+	return TCL_OK;
+    }
+
+    return Tcl_GetDoubleFromObj(NULL, obj, (double *) here);
+}
 int ARecSetFloat( Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
     	double dbl;
+
+    if ( !obj ) {
+	*((float *)here) = 0.0;
+	return TCL_OK;
+    }
 
     if ( Tcl_GetDoubleFromObj( NULL, obj, &dbl) == TCL_ERROR ) { return TCL_ERROR; }
     *((float *)here) = dbl;
@@ -43,6 +55,11 @@ int ARecSetFloat( Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int 
 int ARecSetULong(  Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
     double value;
 
+    if ( !obj ) {
+	*((unsigned long *)here) = 0;
+	return TCL_OK;
+    }
+
     int ret = Tcl_GetDoubleFromObj(NULL, obj, &value);
     *((unsigned long  *) here) = (unsigned long) value;
 
@@ -50,6 +67,11 @@ int ARecSetULong(  Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int
 }
 int ARecSetLong(  Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
     double value;
+
+    if ( !obj ) {
+	*((long *)here) = 0;
+	return TCL_OK;
+    }
 
     int ret = Tcl_GetDoubleFromObj(NULL, obj, &value);
     *((long  *) here) = (long) value;
@@ -59,6 +81,11 @@ int ARecSetLong(  Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int 
 int ARecSetUInt(  Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
     double value;
 
+    if ( !obj ) {
+	*((unsigned int *)here) = 0;
+	return TCL_OK;
+    }
+
     int ret = Tcl_GetDoubleFromObj(NULL, obj, &value);
     *((unsigned int *) here) = (unsigned int) value;
 
@@ -66,6 +93,11 @@ int ARecSetUInt(  Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int 
 }
 int ARecSetInt(   Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
     double value;
+
+    if ( !obj ) {
+	*((int *)here) = 0;
+	return TCL_OK;
+    }
 
     int ret = Tcl_GetDoubleFromObj(NULL, obj, &value);
     *((int    *) here) = (int) value;
@@ -75,6 +107,11 @@ int ARecSetInt(   Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int 
 int ARecSetUShort(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
     	int i;
 
+    if ( !obj ) {
+	*((unsigned short *)here) = 0;
+	return TCL_OK;
+    }
+
     if ( Tcl_GetIntFromObj( NULL, obj, &i) == TCL_ERROR ) { return TCL_ERROR; }
     *((unsigned short *)here) = i;
 
@@ -82,6 +119,11 @@ int ARecSetUShort(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int 
 }
 int ARecSetShort( Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
     	int i;
+
+    if ( !obj ) {
+	*((short *)here) = 0;
+	return TCL_OK;
+    }
 
     if ( Tcl_GetIntFromObj( NULL, obj, &i) == TCL_ERROR ) { return TCL_ERROR; }
     *((short *)here) = i;
@@ -91,6 +133,11 @@ int ARecSetShort( Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int 
 int ARecSetUChar(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
     	int i;
 
+    if ( !obj ) {
+	*((unsigned char *)here) = 0;
+	return TCL_OK;
+    }
+
     if ( Tcl_GetIntFromObj( NULL, obj, &i) == TCL_ERROR ) { return TCL_ERROR; }
     *((unsigned char *)here) = i;
 
@@ -98,6 +145,11 @@ int ARecSetUChar(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m
 }
 int ARecSetChar(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
     	int i;
+
+    if ( !obj ) { 
+	*((char *)here) = 0;
+	return TCL_OK;
+    }
 
     if ( Tcl_GetIntFromObj( NULL, obj, &i) == TCL_ERROR ) { return TCL_ERROR; }
     *((char *)here) = i;
@@ -109,6 +161,11 @@ int ARecSetString(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int 
 
     if ( str ) {  free((void *) str); }
 
+    if ( !obj ) {
+	*((char **)here) = 0;
+	return TCL_OK;
+    }
+
     *(char **) here = strdup(Tcl_GetString(obj));
 
     return TCL_OK;
@@ -117,6 +174,11 @@ int ARecSetTclObj(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int 
     	Tcl_Obj *old = *((Tcl_Obj **)here);
 
     if ( old ) { Tcl_DecrRefCount(old); }
+    
+    if ( !obj ) {
+	*((Tcl_Obj **)here) = 0;
+	return TCL_OK;
+    }
 
     *(Tcl_Obj **) here = obj;
 
@@ -454,15 +516,18 @@ ARecField **ARecFieldMap(Tcl_Obj *result, int objc, Tcl_Obj **objv, ARecType *ty
     }
 
     if ( !objc ) {
-	for ( i = 0; i < type->nfield; i++ ) {
-	    map[i] = &type->field[i];
+	if ( type->stype == AREC_STRUCT ) { 
+	    for ( i = 0; i < type->nfield; i++ ) {
+		map[i] = &type->field[i];
+	    }
+	} else {
+	    i = 1;
+	    map[0] = &type->field[type->stype-1];
 	}
     } else {
 	for ( i = 0; i < objc; i++ ) {
 	    if ( !(map[i] = ARecLookupField(type->nfield, type->field, objv[i])) ) {
 		Tcl_Free((char *) map);
-
-		printf("Failed!!\n");
 
 		Tcl_AppendStringsToObj(result, " in type \"", Tcl_GetString(type->nameobj), "\" cannot lookup field \"", Tcl_GetString(objv[i]), "\"", NULL);
 		return NULL;
@@ -525,6 +590,7 @@ void ARecTypeAddField1(ARecType *type, Tcl_Obj *nameobj, int length, ARecType *f
 
     type->field[type->nfield].nameobj = nameobj;
     Tcl_IncrRefCount(nameobj);
+
 
 
     type->field[type->nfield].type   = field;
@@ -668,7 +734,7 @@ int ARecSetFromArgs(Tcl_Interp *ip, ARecType *type, char *recs, int n, int objc,
 	int list = 0;
 	Tcl_Obj *result = Tcl_GetObjResult(ip);
 
-    if ( objc % 2 ) {
+    if ( objc == 1 ) {
 	return ARecSetFromList(ip, type, recs, n, objc, objv, islist);
     }
 
@@ -682,6 +748,10 @@ int ARecSetFromArgs(Tcl_Interp *ip, ARecType *type, char *recs, int n, int objc,
 			, NULL);
 		return TCL_ERROR;
 	    }
+	    if ( type->stype > 0 ) {
+		ARecSetField(ip, &type->field[type->stype-1], recs, NULL);			// Union clear old value.
+	    }
+
 	    if ( ARecSetField(ip, field, recs, objv[i+1]) == TCL_ERROR ) {
 		Tcl_AppendStringsToObj(result , Tcl_GetString(type->nameobj) , " cannot set field \""
 			, Tcl_GetString(objv[i+0]), "\" from \""
@@ -689,6 +759,10 @@ int ARecSetFromArgs(Tcl_Interp *ip, ARecType *type, char *recs, int n, int objc,
 			, Tcl_GetString(objv[i+0]), "\""
 			, NULL);
 		return TCL_ERROR;
+	    } else {
+		if ( type->stype != AREC_STRUCT ) {
+		    type->stype = (field - type->field) + 1;				// Union record current field
+		}
 	    }
 	}
 
