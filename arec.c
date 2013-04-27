@@ -438,7 +438,7 @@ int ARecInstObjCmd(data, ip, objc, objv)
 	return TCL_OK;
     );
 
-    {
+     if ( objc >= 2 )  {
 	ARecField *field;
 
 	ARecCmd(ip, inst, ".", " ", 1, objc, objv, objv++;  objc--; );
