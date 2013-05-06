@@ -1,28 +1,38 @@
 
-arec32	= lib/arec/macosx-ix86/arec.dylib
-arec64	= lib/arec/macosx-x86_64/arec.dylib
+OS  =$(shell uname)
+ARCH=$(OS).$(shell uname -m)
+
+include config/Makefile.$(OS)
+
+all: arec.$(ARCH)
 
 
-all: $(arec32)  $(arec64)
+arec.Darwin.i386	: lib/arec/macosx-ix86/arec.dylib
+arec.Darwin.x86_64	: lib/arec/macosx-x86_64/arec.dylib
+arec.Linux.x86_64 	: lib/arec/linux-x86_64/arec.so
 
-arec32: $(arec32)
-arec64: $(arec64)
+lib/arec/linux-x86_64/arec.so : arec.c arec.h arec.tcl
+	critcl -pkg arec
 
-
-$(arec32) : arec.c arec.h arec.tcl
+arec.Darwin.i386 : arec.c arec.h arec.tcl
 	critcl -target macosx-x86_32 -pkg arec
 	rm -rf lib/arec/macosx-ix86
 	mv lib/arec/macosx-x86_32 lib/arec/macosx-ix86
 
-$(arec64) : arec.c arec.h arec.tcl
+arec.Darwin.x86_64 : arec.c arec.h arec.tcl
 	critcl -target macosx-x86_64 -pkg arec
 	#rm -rf lib/arec/macosx-ix86
 	#mv lib/arec/macosx-x86_32 lib/arec/macosx-ix86
 
 
-test : FORCE
+test : test.$(OS)
+
+test.Darwin : FORCE
 	arch -i386   /usr/local/bin/tclsh8.6 ./arec-test.tcl 
 	arch -x86_64 /usr/local/bin/tclsh8.6 ./arec-test.tcl
+
+test.Linux : FORCE
+	tclsh8.6 ./arec-test.tcl
 
 struct : struct.tcl
 	critcl -target macosx-x86_64 -pkg struct

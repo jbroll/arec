@@ -39,7 +39,11 @@ The package defines one command arec::typedef.  This command is used to create n
 create data object commands.  The data object commands are handles to arrays of C data structures.  They can be used to get and set
 indivudual values in the elements of the array.  The general form of the access syntax is :
 
-    _obj-command_ \[start \[end]] name value
+    _obj-command_ \[start \[end]] set name value
+
+or 
+
+    _obj-command_ \[start \[end]] get name
 
 Example:
 
