@@ -2,9 +2,10 @@
 OS  =$(shell uname)
 ARCH=$(OS).$(shell uname -m)
 
-all: arec.$(ARCH)
+all: arec.$(OS)
 
-Darwin : arec.Darwin.i386 arec.Darwin.x86_64 test.Darwin
+arec.Darwin : arec.Darwin.i386 arec.Darwin.x86_64 test.Darwin
+arec.Linux  :                  arec.Linux.x86_64  test.Linux
 
 
 arec.Darwin.i386	: lib/arec/macosx-ix86/arec.dylib
@@ -12,7 +13,7 @@ arec.Darwin.x86_64	: lib/arec/macosx-x86_64/arec.dylib
 arec.Linux.x86_64 	: lib/arec/linux-x86_64/arec.so
 
 lib/arec/linux-x86_64/arec.so : arec.c arec.h arec.tcl
-	critcl -pkg arec
+	critcl -target linux-x86_64 -pkg arec
 
 lib/arec/macosx-ix86/arec.dylib : arec.c arec.h arec.tcl
 	critcl -target macosx-x86_32 -pkg arec
