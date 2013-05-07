@@ -2,8 +2,6 @@
 OS  =$(shell uname)
 ARCH=$(OS).$(shell uname -m)
 
-include config/Makefile.$(OS)
-
 all: arec.$(ARCH)
 
 Darwin : arec.Darwin.i386 arec.Darwin.x86_64 test.Darwin
