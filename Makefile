@@ -12,7 +12,7 @@ arec.Darwin.x86_64	: lib/arec/macosx-x86_64/arec.dylib
 arec.Linux.x86_64 	: lib/arec/linux-x86_64/arec.so
 
 lib/arec/linux-x86_64/arec.so : arec.c arec.h arec.tcl
-	critcl -pkg arec
+	critcl -force -pkg arec
 
 arec.Darwin.i386 : arec.c arec.h arec.tcl
 	critcl -target macosx-x86_32 -pkg arec
