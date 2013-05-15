@@ -13,7 +13,7 @@ proc iota { fr to { in 1 } } {
 }
 
 
-::tcltest::configure -testdir [file dirname [file normalize [info script]]] -singleproc 1 
+::tcltest::configure -testdir [file dirname [file normalize [info script]]] -singleproc 1  -verbose bps
 
 ::tcltest::test rec-dtype-size  { dtype size     } -body { arec::type  size   }		  -result [arec::ARecTypeSize]
 ::tcltest::test rec-dtype-types { dtype types    } -body { arec::type types   }  	  -result {Tcl_Obj* long long long long long long long long long long}
