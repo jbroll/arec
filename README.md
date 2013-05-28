@@ -14,13 +14,13 @@ The computation will be written in C, likely calling additional C libraries.
 If you are using Tcl arrays or dicts to hold the parameters, they must be unpacked before getting to the real code.
 Although this is relativly simple and the Tcl API is well documented, it is tedious and error prone.
 With ARec, the data are stored in memory directly corrosponding to C data structures and can be directly accessed from the 
-C code.
+C code.  No parsing necessary.
 
 The second use case is when there is a very large number of structures to be passed among several parts of the computation.
 Tcl is used as the high level glue controling the flow of how the computation proceeds.
 
 In my current optical raytracing project I'm using ARec in both of these capacities.  The optical surfaces that the rays 
-will traverse each have between a dozem and a hundred parameters.  Tens of thousands of rays are traced and then the 
+will traverse each have between a dozen and a hundred parameters.  Tens of thousands of rays are traced and then the 
 resulting ray posiitons can be analysed, binned into images or saved into output files as directed by the Tcl script.
 
 -----
@@ -57,11 +57,12 @@ Create a new data type "Thing" with 4 members, x, y, nfobs and placing.  Then cr
 	char*	placeing
     }
 
-    Thing things 10
+    Thing create things 10
 
     things 0 set x 10
 
-Two indicies may be given to operate on a range of array elements and if the index arguments are omitted, all array elements are implied.
+Two indicies may be given to operate on a range of array elements and if the index arguments are omitted, all array elements are implied.  The usual Tcl
+convention regarding "end" and arithmatic on "end" is implimented.
 
 To set all the element x members to the value 10 use:
 
@@ -71,6 +72,39 @@ To set elements 1, 2, and 3 x members to the value 10 use:
 
     things 1 3 set x 10
 
+--------
+
+Two initial arrays of records are provided that describe the atomic types available.  _arec::types_ is an array of records  data structure describing
+the avaible type and thier attributes.  Initially this table containes the default types and can be queired to list them:
+
+	% puts [join [arec::types get name] \n]
+	char uchar short ushort int uint long ulong float double string Tcl_Obj*
+
+This array is itself of type _arec::type_ and contains these fields describing the attributes of the data types:
+
+	name size align stype nfield afield fields set get shadow inst
+
+After the user creates a new data type with the arec::typedef command it will appear in the arec::types array of records.
+
+-------
+
+User defined data types may them selves be used in datatype definitions.  After the above "Thing" type is defined an additional type may 
+contain an array of "Thing"s:
+
+    arec::typedef struct Fluff {
+	int	mode
+	Thing	leftside 2
+	Thing	riteside 2
+    }
+
+    Fluff create fluffs 3
+
+    puts [fluffs 1 riteside get]
+
+This creats a new data type "Fluff" which contains a mode and two arrays of two things each.  Then an array of 3 "Fluff" records is created refered
+to by the handle "fluffs". 
+
+	
 
 
 
