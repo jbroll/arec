@@ -208,7 +208,6 @@ ARecType *ARecLookupType(Tcl_Obj *nameobj)
 
     for ( i = 0; i < ARecTypeInst->nrecs; i++ ) {
 	if ( !strcmp(Tcl_GetString(types[i].nameobj), name) ) {
-
 	    return &types[i];
 	}
     }
@@ -249,18 +248,16 @@ int ARecDelType(ClientData data)
     ARecType *type = (ARecType *) data;
 
     type = ARecLookupType(type->nameobj);
-    Tcl_Free(type->shadow);
 
-    ARecInstDeleteRecs(ARecTypeInst, type, 1);
-
-    printf("XXX\n");
 
     Tcl_DecrRefCount(type->nameobj);
 
     for ( i = 0; i < type->nfield; i++ ) { Tcl_DecrRefCount(type->field[i].nameobj); }
 
+    Tcl_Free((void *) type->shadow);
     Tcl_Free((void *) type->field);
-    Tcl_Free((void *) type);
+
+    ARecInstDeleteRecs(ARecTypeInst, type, 1);
 }
 
 int ARecTypeObjCmd(data, ip, objc, objv)
@@ -318,6 +315,11 @@ int ARecTypeCreateObjCmd(Tcl_Interp *ip, int objc, Tcl_Obj **objv)
 	return TCL_ERROR;
     }
 
+    if ( ARecLookupType(objv[1]) != NULL ) {
+	Tcl_SetStringObj(result, "An arec::typedef of this name already exists", -1);
+	return TCL_ERROR;
+    }
+
     ARecTypeCreate(ip, objv[1], strcmp(Tcl_GetString(objv[2]), "union") ? AREC_STRUCT : AREC_UNION);
 
     Tcl_SetObjResult(ip, objv[1]);	
@@ -327,11 +329,8 @@ int ARecTypeCreateObjCmd(Tcl_Interp *ip, int objc, Tcl_Obj **objv)
 
 int ARecInstDeleteRecs(ARecField *inst, char *recs, int m)
 {
-    printf("Here\n");
-
+    memmove(recs, recs+m*inst->type->size,  (inst->nrecs - m) * inst->type->size - ((recs- (char *) inst->recs)));
     inst->nrecs -= m;
-
-    memcpy(recs, recs+m*inst->type->size,  (inst->nrecs - m) * inst->type->size - ((recs- (char *) inst->recs)));
 
     return TCL_OK;
 }
@@ -599,18 +598,12 @@ void ARecTypeAddField1(ARecType *type, Tcl_Obj *nameobj, int length, ARecType *f
 
     if ( type != ARecTypeType ) { type = ARecLookupType(type->nameobj); }
 
-    printf("AddField %p\n", type);
-
     if ( type->nfield >= type->afield-1 ) {
-	printf("ReAlloc\n");
-
 	type->afield += 10;
 	type->field = (ARecField *) Tcl_Realloc((char *) type->field, sizeof(ARecField) * type->afield);
     }
 
     maxx = type->align;
-
-    printf("AddField %p N %ld\n", type, type->nfield);
 
     for ( i = 0; i < type->nfield; i++ ) {
 	if ( type->stype == AREC_STRUCT ) {
@@ -642,12 +635,8 @@ void ARecTypeAddField1(ARecType *type, Tcl_Obj *nameobj, int length, ARecType *f
     }
     type->size	= ARecPadd(size, maxx);
 
-    printf("Add Field %s %s %p %p %ld length : %d\n", Tcl_GetString(type->nameobj), Tcl_GetString(nameobj), type, type->shadow, type->size, length);
-
     type->nfield++;
     memcpy(type->shadow, type, sizeof(ARecType));
-
-    printf("AddField Done\n");
 }
 
 int ARecTypeAddField(Tcl_Interp *ip, ARecType *type, int objc, Tcl_Obj **objv)
@@ -976,12 +965,11 @@ ARecType *ARecTypeAddType(ARecField *types, Tcl_Obj *nameobj, int size, int alig
     type->nfield =  0;
     type->afield = 10;
     type->field  = (ARecField *) Tcl_Alloc(sizeof(ARecField) * type->afield);
+    memset(type->field, 0, sizeof(ARecField) * type->afield);
     type->instances = NULL;
 
     type->set = set;
     type->get = get;
-
-    type->field[0].nameobj = NULL;
 
     if ( types ) {
 	memcpy(type->shadow, type, sizeof(ARecType));

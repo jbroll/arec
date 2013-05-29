@@ -1,5 +1,5 @@
 
-if { 1 && ![critcl::compiled] } {		# Force md5 to be FAST.  Don't use object cache.
+if { 1 } {		# Force md5 to be FAST.  Don't use object cache.
     proc md5 { x } {
 	    return [expr rand()]
     }
