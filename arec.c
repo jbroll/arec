@@ -248,6 +248,13 @@ int ARecDelType(ClientData data)
     int i;
     ARecType *type = (ARecType *) data;
 
+    type = ARecLookupType(type->nameobj);
+    Tcl_Free(type->shadow);
+
+    ARecInstDeleteRecs(ARecTypeInst, type, 1);
+
+    printf("XXX\n");
+
     Tcl_DecrRefCount(type->nameobj);
 
     for ( i = 0; i < type->nfield; i++ ) { Tcl_DecrRefCount(type->field[i].nameobj); }
@@ -314,6 +321,17 @@ int ARecTypeCreateObjCmd(Tcl_Interp *ip, int objc, Tcl_Obj **objv)
     ARecTypeCreate(ip, objv[1], strcmp(Tcl_GetString(objv[2]), "union") ? AREC_STRUCT : AREC_UNION);
 
     Tcl_SetObjResult(ip, objv[1]);	
+
+    return TCL_OK;
+}
+
+int ARecInstDeleteRecs(ARecField *inst, char *recs, int m)
+{
+    printf("Here\n");
+
+    inst->nrecs -= m;
+
+    memcpy(recs, recs+m*inst->type->size,  (inst->nrecs - m) * inst->type->size - ((recs- (char *) inst->recs)));
 
     return TCL_OK;
 }
@@ -444,7 +462,11 @@ int ARecInstObjCmd(data, ip, objc, objv)
 	return TCL_OK;
     );
 
-     if ( objc >= 2 )  {
+    ARecCmd(ip, inst, "delete", " ", objc == 2, objc, objv, 
+	return ARecInstDeleteRecs(inst, recs, m);
+    );
+
+    if ( objc >= 2 )  {
 	ARecField *field;
 
 	ARecCmd(ip, inst, ".", " ", 1, objc, objv, objv++;  objc--; );
@@ -588,7 +610,7 @@ void ARecTypeAddField1(ARecType *type, Tcl_Obj *nameobj, int length, ARecType *f
 
     maxx = type->align;
 
-    printf("AddField %p N %d\n", type, type->nfield);
+    printf("AddField %p N %ld\n", type, type->nfield);
 
     for ( i = 0; i < type->nfield; i++ ) {
 	if ( type->stype == AREC_STRUCT ) {
@@ -601,8 +623,6 @@ void ARecTypeAddField1(ARecType *type, Tcl_Obj *nameobj, int length, ARecType *f
 	    maxx = type->field[i].type->align;
 	}
     }
-
-    printf("Here\n");
 
     type->field[type->nfield].nameobj = nameobj;
     Tcl_IncrRefCount(nameobj);
@@ -622,7 +642,7 @@ void ARecTypeAddField1(ARecType *type, Tcl_Obj *nameobj, int length, ARecType *f
     }
     type->size	= ARecPadd(size, maxx);
 
-    printf("Add Field %s %s %p %p %d length : %d\n", Tcl_GetString(type->nameobj), Tcl_GetString(nameobj), type, type->shadow, type->size, length);
+    printf("Add Field %s %s %p %p %ld length : %d\n", Tcl_GetString(type->nameobj), Tcl_GetString(nameobj), type, type->shadow, type->size, length);
 
     type->nfield++;
     memcpy(type->shadow, type, sizeof(ARecType));
