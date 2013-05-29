@@ -1,11 +1,4 @@
 
-if { 1 && ![critcl::compiled] } {		# Force md5 to be FAST.  Don't use object cache.
-    proc md5 { x } {
-	    return [expr rand()]
-    }
-}
-
-
 critcl::cheaders arec.h
 critcl::csources arec.c
 critcl::tsources arec.tcl
