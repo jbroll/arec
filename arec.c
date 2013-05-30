@@ -724,7 +724,7 @@ int ARecIndex(ARecField *inst, Tcl_Obj *result, int *objc, Tcl_Obj ***objv, int 
 
 ARecRealloc(ARecField *inst, int nrecs, int more) 
 {
-    if ( nrecs >=  inst->arecs ) {
+    if ( nrecs >  inst->arecs ) {
 	inst->arecs = nrecs + more;
 	inst->recs  = Tcl_Realloc((char *) inst->recs, inst->arecs * inst->type->size);
 
