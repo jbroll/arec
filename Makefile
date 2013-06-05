@@ -4,8 +4,8 @@ ARCH=$(OS).$(shell uname -m)
 
 all: arec.$(OS)
 
-arec.Darwin : arec.Darwin.i386 arec.Darwin.x86_64 test.Darwin
-arec.Linux  :                  arec.Linux.x86_64  test.Linux
+arec.Darwin : arec.Darwin.i386 arec.Darwin.x86_64
+arec.Linux  :                  arec.Linux.x86_64
 
 
 arec.Darwin.i386	: lib/arec/macosx-ix86/arec.dylib

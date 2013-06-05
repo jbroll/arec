@@ -1,6 +1,6 @@
 #!/usr/bin/env tclkit8.6
 #
-#lappend auto_path ../lib
+lappend auto_path ../lib
 
 package require tcltest
 package require arec
@@ -13,7 +13,7 @@ proc iota { fr to { in 1 } } {
 }
 
 
-::tcltest::configure -testdir [file dirname [file normalize [info script]]] -singleproc 1 
+::tcltest::configure -testdir [file dirname [file normalize [info script]]] -singleproc 1  -verbose bps
 
 ::tcltest::test rec-dtype-size  { dtype size     } -body { arec::type  size   }		  -result [arec::ARecTypeSize]
 ::tcltest::test rec-dtype-types { dtype types    } -body { arec::type types   }  	  -result {Tcl_Obj* long long long long long long long long long long}
@@ -39,6 +39,7 @@ set Da [arec::DblAlign]
 	::arec::types getbytes  
 	::arec::types getptr  
 	::arec::types setbytes  
+	::arec::types delete  
 ::arec::types no method?}
 ::tcltest::test rec-dtype-size     { dtype size     } -body { arec::types length } 	  		   -result 12
 ::tcltest::test rec-dtype-types    { dtype types    } -body { arec::types 0 end get name  }  		   -result {char uchar short ushort int uint long ulong float double string Tcl_Obj*}
@@ -82,7 +83,7 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
 
 
 	blonk 0 end get
-    } -cleanup { rename blonk {}
+    } -cleanup { rename blonk {}; rename blink {}
     } -result {{6 4 3.3} {4 4 3.3} {4 4 3.3} {4 4 5.5}}
 }
 
@@ -108,7 +109,7 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
     blonk end+1 set a 9
 
     blonk 0 end get
-} -cleanup { rename blonk {}
+} -cleanup { rename blonk {}; rename blink {}
 } -result  "[lrepeat 5 {3.3 3 5.5}] {6.0 0 0.0} {7.0 0 0.0} {8.0 0 0.0} {9.0 0 0.0}"
 
 ::tcltest::test set1 { set one arg } -body {
@@ -123,7 +124,7 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
     blonk 0 end set [blonk 0 end get]
 
     blonk 0 end get
-} -cleanup { rename blonk {}
+} -cleanup { rename blonk {}; rename blink {}
 } -result {{1.0 2 3.0} {1.0 2 3.0} {1.0 2 3.0} {1.0 2 3.0} {1.0 2 3.0}}
 
 ::tcltest::test setdict { sedict-1 } -body {
@@ -138,7 +139,7 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
     blonk 0 end setdict [blonk 0 end getdict]
 
     blonk 0 end getdict
-} -cleanup { rename blonk {}
+} -cleanup { rename blonk {}; rename blink {}
 } -result {{a 1.0 b 2 c 3.0} {a 1.0 b 2 c 3.0} {a 1.0 b 2 c 3.0} {a 1.0 b 2 c 3.0} {a 1.0 b 2 c 3.0}}
 
 ::tcltest::test setlist { selist-1 } -body {
@@ -155,7 +156,7 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
     blonk 0 end setlist a b {{1 4} {2 8} {3 12} {4 16} {5 20}}
 
     blonk 0 end getlist
-} -cleanup { rename blonk {}
+} -cleanup { rename blonk {}; rename blink {}
 } -result {{1.0 4 3.0} {2.0 8 3.0} {3.0 12 3.0} {4.0 16 3.0} {5.0 20 3.0}}
 
 ::tcltest::test alloc { alloc-1 } -body {
@@ -170,7 +171,7 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
     foreach i [iota 0 1000] {
 	blonk $i set a 1 b 2 c 3
     }
-} -cleanup { rename blonk {}
+} -cleanup { rename blonk {}; rename blink {}
 } -result {}
 
 ::tcltest::test setlist { selist-1 } -body {
@@ -187,7 +188,7 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
     lappend reply [blonk 1 2 get a b]
 
     set reply
-} -cleanup { rename blonk {}
+} -cleanup { rename blonk {}; rename blink {}
 } -result {0.0 {0.0 0} {0.0 0.0} {{0.0 0} {0.0 0}}}
 
 ::tcltest::test union { union-1 } -body {
@@ -202,7 +203,7 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
     blonk 0 set a 4.5
     blonk 0 get a
 
-} -cleanup { rename blonk {}
+} -cleanup { rename blonk {}; rename blink {}
 } -result {4.5}
 
 ::tcltest::test union { union-get } -body {
@@ -222,7 +223,7 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
 
     list $1 $2
 
-} -cleanup { rename blonk {}
+} -cleanup { rename blonk {}; rename blink {}
 } -result {4.5 4}
 
 ::tcltest::test union { union-crunch } -body {
@@ -262,6 +263,29 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
 	}
     }
 
-} -cleanup { rename blonk {}
+} -cleanup { rename blonk {}; rename blink {}
 } -result {}
+
+::tcltest::test delete { delete } -body {
+    arec::typedef struct Thing {
+	double  x
+	double  y
+	int     k
+	int     l
+    }
+
+    Thing create things 11
+
+    things 0 set x 0
+    things 1 set x 1
+    things 2 set x 2
+    things 3 set x 3
+    things 4 set x 4
+
+    things 1 delete
+
+    things 0 3 get x
+
+} -cleanup { rename things {}; rename Thing {}
+} -result {0.0 2.0 3.0 4.0}
 
