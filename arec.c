@@ -348,6 +348,12 @@ int ARecInstObjCmd(data, ip, objc, objv)
 
     int n, m, islist = 0;
 
+    ARecCmd(ip, inst, "type", " ", objc >= 1, objc, objv,
+	ARecTypeObjCmd(inst->type, ip, --objc, &objv[1]);	
+
+	return TCL_OK;
+    );
+
     ARecCmd(ip, inst, "size", " ", objc >= 1, objc, objv,
 	Tcl_SetObjResult(ip, Tcl_NewIntObj(inst->type->size));	
 
