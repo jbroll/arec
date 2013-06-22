@@ -1,0 +1,78 @@
+#!/usr/bin/env tclsh8.6
+#
+lappend auto_path lib /Users/john/lib
+
+package require tcltest
+package require arec
+package require arec-struct
+
+source ../perm.tcl
+source ../../tna/template.tcl
+source ../../tna/functional.tcl
+
+set Types [arec::types get name]
+set Sizes [arec::types get size]
+
+array set TMap {
+    char	char
+    uchar	"unsigned char"
+    short	short
+    ushort	"unsigned short"
+    int		int
+    uint	"unsigned int"
+    long	long
+    ulong	"unsigned long"
+    float	float
+    double	double
+    string	char*
+    Tcl_Obj*	Tcl_Obj*
+    Tcl_Obj	Tcl_Obj*
+}
+
+#foreach type $Types size $Sizes {
+#    puts "$size : [sizeof_$type]"
+#}
+
+foreach type $Types {
+    set Type [regsub {[^_a-zA-Z]} $type {}]
+
+    arec::typedef ${type}_struct [subst { $type value }]
+}
+
+#foreach type $Types {
+#    set Type [regsub {[^_a-zA-Z]} $type {}]
+#
+#    #puts "[${type}_struct size] [sizeof_${Type}_struct]"
+#}
+
+
+proc structN { n } {
+    foreach types [combi $::Types $n list] {
+	#puts $types
+	arec::typedef struct _struct_[join $types _] {
+	    upvar types types
+
+	    foreach { i type } [enumerate $types] {
+		$type value$i
+	    }
+	} [join $types _]_struct
+    }
+}
+
+structN 2
+structN 3
+structN 4
+
+proc testN { n } {
+    foreach types [combi $::Types $n list] {
+	::tcltest::test types "type: $types" -body {
+
+	    list [expr { [[join $types _]_struct size] == [sizeof_[join $types _]] }] [[join $types _]_struct size] [sizeof_[join $types _]]
+	} -result [list 1 [sizeof_[join $types _]] [[join $types _]_struct size]]
+    }
+}
+
+testN 2
+testN 3
+testN 4
+

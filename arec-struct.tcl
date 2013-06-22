@@ -7,11 +7,11 @@ package require arec
 
 package require critcl 3.1
 
-package provide struct 0.4
+package provide arec-struct 0.4
 
 source perm.tcl
-source ../template.tcl
-source ../functional.tcl
+source ../tna/template.tcl
+source ../tna/functional.tcl
 
 set Types [arec::types get name]
 set Sizes [arec::types get size]
@@ -67,7 +67,6 @@ foreach type $Types {
 
 proc structN { n } {
     foreach types [combi $::Types $n list] {
-	puts $types
 	critcl::cproc sizeof_[join $types _] {} int [subst { 
 	    typedef struct _struct_[join [map t $types { I $::IMap($t) }] _] { [subst {
 		 [: { i type } [enumerate $types] { $::TMap($type) value$i; }]
@@ -78,21 +77,8 @@ proc structN { n } {
     }
 }
 
+#structN 1
 structN 2
-#structN 3
-
-set n 2
-
-foreach s1 [combi [map x $::Types { set IMap($x) }] $n list] s2 [combi [map x $::Types { set IMap($x) }] $n list] {
-    set s1 [join $s1 _]
-    set s2 [join $s2 _]
-
-    critcl::cproc sizeof_${s1}_${s2}_struct {
-        typedef struct {
-	    ${::s1}_struct	value0
-	    ${::s2}_struct	value1
-        }
-    }
-}
-
+structN 3
+structN 4
 

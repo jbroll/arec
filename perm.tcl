@@ -1,3 +1,4 @@
+
 proc prod { d1 d2 { list {} } } {
     foreach x $d1 {
 	foreach y $d2 {
