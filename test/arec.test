@@ -28,7 +28,8 @@ set La [arec::LngAlign]
 set Ds [arec::DblSize]
 set Da [arec::DblAlign]
 
-::tcltest::test rec-dtype-size     { dtype size     } -returnCodes 1 -body { arec::types } -result {	::arec::types size  
+::tcltest::test rec-dtype-size     { dtype size     } -returnCodes 1 -body { arec::types } -result {	::arec::types type  
+	::arec::types size  
 	::arec::types length  
 	::arec::types set  field value ...
 	::arec::types setdict  field value ...
