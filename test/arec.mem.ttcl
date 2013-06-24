@@ -1,0 +1,22 @@
+#!/usr/bin/env tclkit8.6
+#
+lappend auto_path lib
+
+package require tcltest
+package require arec
+
+source ../util/func.tcl
+
+arec::typedef Thing { int count }
+
+foreach j [iota 100] {
+    foreach i [iota 1 1000] {
+	Thing create thing 1000000
+	rename thing {}
+    }
+
+    foreach l [iota 1000000] { incr kkk }
+
+    puts Next
+
+}
