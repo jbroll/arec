@@ -41,6 +41,7 @@ namespace eval arec {
 
     critcl::ccode {
 	#include "arec.h"
+	#include "memory.h"
 
 	extern ARecField ARecTypesInst;
 	extern ARecType  ARecTypesType;
@@ -60,6 +61,16 @@ namespace eval arec {
     critcl::cproc    DblAlign     {} long { return sizeof(ARecDblAlign) - sizeof(double); }
     critcl::cproc    LngAlign     {} long { return sizeof(ARecLngAlign) - sizeof(long); }
     critcl::cproc    PtrAlign     {} long { return sizeof(ARecPtrAlign) - sizeof(void*); }
+
+    proc copy { arec1 arec2 { n {} } } {
+	if { $n eq {} } { set n [$arec1 length] }
+
+	memcpy [$arec1 getptr] [$arec2 getptr] [expr [$arec1 type size]*$n]
+    }
+
+    critcl::cproc    memcpy { long dst long src long bytes } void { 
+	memcpy((void *) dst, (void *) src, bytes);
+    }
 }
 
 package provide arec 1.0
