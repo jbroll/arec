@@ -898,13 +898,19 @@ Tcl_Obj *ARecGetStruct(Tcl_Interp *ip, ARecType *type, void *recs, int m, int ob
         ARecField **map;
 	int	   nmap;
 
+
     if ( !(map = ARecFieldMap(result, objc, objv, type, &nmap)) ) {
 	Tcl_SetObjResult(ip, result);
 	return NULL;
     }
 
+
     for ( j = 0; j < m; j++ ) {
-	    Tcl_Obj *reply = Tcl_NewObj();
+	Tcl_Obj *reply;
+
+	if ( nmap > 1 || flags & AREC_ISLIST || flags & AREC_ASDICT ) {
+	    reply = Tcl_NewObj();
+	}
 
 	for ( i = 0 ; i < nmap; i++ ) {
 
@@ -928,6 +934,7 @@ Tcl_Obj *ARecGetStruct(Tcl_Interp *ip, ARecType *type, void *recs, int m, int ob
 		    return NULL;
 		}
 	    } else {
+		Tcl_DecrRefCount(result);
 		result = value;
 	    }
 	}
@@ -937,7 +944,10 @@ Tcl_Obj *ARecGetStruct(Tcl_Interp *ip, ARecType *type, void *recs, int m, int ob
 		return NULL;
 	    }
 	} else {
-	    if ( nmap > 1 ) { result = reply; }
+	    if ( nmap > 1 ) {
+		Tcl_DecrRefCount(result);
+		result = reply;
+	    }
 	}
 
 	recs = (void *) ((char *)recs) + type->size;

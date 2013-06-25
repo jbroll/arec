@@ -9,6 +9,23 @@ source ../util/func.tcl
 
 arec::typedef Thing { int count }
 
+Thing create thing 10000
+
+foreach j [iota 1000] {
+    foreach i [iota 0 9999] {
+	thing $i get count
+    }
+
+    foreach l [iota 1000000] { incr kkk }
+
+    puts Next
+}
+
+
+
+
+exit
+
 foreach j [iota 100] {
     foreach i [iota 1 1000] {
 	Thing create thing 1000000
