@@ -39,6 +39,10 @@ namespace eval arec {
     proc char*    { args } { add-field string   {*}$args }
     proc Tcl_Obj* { args } { add-field Tcl_Obj* {*}$args }
 
+    proc inline   { type } {
+	foreach { dtype name } [::$type fields] { $dtype $name }
+    }
+
     critcl::ccode {
 	#include "arec.h"
 	#include "memory.h"
