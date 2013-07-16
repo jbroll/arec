@@ -1,0 +1,20 @@
+#!/usr/bin/env tclkit8.6
+#
+
+lappend auto_path lib
+
+package require arec
+
+arec::typedef foo {
+    double x
+    int    y
+    string z
+}
+
+arec::typedef goo { 
+    inline foo
+}
+
+puts [foo fields]
+puts [goo fields]
+
