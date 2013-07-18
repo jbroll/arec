@@ -7,8 +7,16 @@ package require arec
 package require arec-struct
 
 source ../perm.tcl
-source ../../tna/template.tcl
-source ../../tna/functional.tcl
+
+proc enumerate { list } {
+    set i 0
+    foreach item $list {
+	lappend reply $i $item
+	incr i
+    }
+
+    set reply
+}
 
 set Types [arec::types get name]
 set Sizes [arec::types get size]

@@ -20,4 +20,3 @@ puts [goo fields]
 
 rename foo {}
 rename goo {}
-
