@@ -129,3 +129,8 @@ Other features:
   * arec::typedef union ...
   * It is fairly easy to use the same typedef in C and Tcl ...
 
+
+Short commings:
+
+  * Raw pointers are passed about freely.
+
