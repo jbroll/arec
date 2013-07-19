@@ -123,3 +123,9 @@ This creats a new data type "Fluff" which contains a mode and two arrays of two
 things each.  Then an array of 3 "Fluff" records is created refered to by the
 handle "fluffs". 
 
+
+Other features:
+
+  * arec::typedef union ...
+  * It is fairly easy to use the same typedef in C and Tcl ...
+
