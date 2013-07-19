@@ -49,11 +49,11 @@ commands.  The data object commands are handles to arrays of C data structures.
 They can be used to get and set indivudual values in the elements of the array.
 The general form of the access syntax is :
 
-    _obj-command_ \[start \[end]] set name value
+    _obj-command_ [start [end]] set name value
 
 or 
 
-    _obj-command_ \[start \[end]] get name
+    _obj-command_ [start [end]] get name
 
 Example:
 
@@ -122,13 +122,4 @@ the above "Thing" type is defined an additional type may contain an array of
 This creats a new data type "Fluff" which contains a mode and two arrays of two
 things each.  Then an array of 3 "Fluff" records is created refered to by the
 handle "fluffs". 
-
-	
-
-
-
-
-
-
-
 
