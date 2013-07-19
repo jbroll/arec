@@ -18,6 +18,5 @@ arec::typedef goo {
 puts [foo fields]
 puts [goo fields]
 
-
 rename foo {}
 rename goo {}

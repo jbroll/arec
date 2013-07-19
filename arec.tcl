@@ -1,4 +1,6 @@
 
+critcl::cflags -DTCL_MEM_DEBUG=1
+
 critcl::cheaders arec.h
 critcl::csources arec.c
 critcl::tsources arec.tcl
