@@ -1038,5 +1038,8 @@ void ARecInit(Tcl_Interp *ip) {
     ARecTypeAddField1(ARecTypeType, Tcl_NewStringObj("get",   -1), 1, ARecLookupType(tclobjLong));
     ARecTypeAddField1(ARecTypeType, Tcl_NewStringObj("shadow",-1), 1, ARecLookupType(tclobjLong));
     ARecTypeAddField1(ARecTypeType, Tcl_NewStringObj("inst",  -1), 1, ARecLookupType(tclobjLong));
+    ARecTypeAddField1(ARecTypeType, Tcl_NewStringObj("nmethod",  -1), 1, ARecLookupType(tclobjLong));
+    ARecTypeAddField1(ARecTypeType, Tcl_NewStringObj("amethod",  -1), 1, ARecLookupType(tclobjLong));
+    ARecTypeAddField1(ARecTypeType, Tcl_NewStringObj("methods",  -1), 1, ARecLookupType(tclobjLong));
 }
 
