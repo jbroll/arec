@@ -62,10 +62,10 @@ create an array of 10 Things accessed via the "things" command.  Set the first
 elements x member to the value 10.
 
     arec::typedef struct Thing {
-	double	x
-	double	y
-	int	nfobs
-	char*	placeing
+        double	x
+        double	y
+        int	nfobs
+        char*	placeing
     }
 
     Thing create things 10
@@ -110,9 +110,9 @@ the above "Thing" type is defined an additional type may contain an array of
 "Thing"s:
 
     arec::typedef struct Fluff {
-	int	mode
-	Thing	leftside 2
-	Thing	riteside 2
+        int	mode
+        Thing	leftside 2
+        Thing	riteside 2
     }
 
     Fluff create fluffs 3

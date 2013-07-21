@@ -53,6 +53,12 @@ typedef struct _ARecType *ARecTypePtr;		// This is strange!
 typedef int       (*ARecSetFunc)(Tcl_Interp *ip, ARecTypePtr type, Tcl_Obj *, void *, int m, int objc, Tcl_Obj** objv, int flags);
 typedef Tcl_Obj*  (*ARecGetFunc)(Tcl_Interp *ip, ARecTypePtr type,            void *, int m, int objc, Tcl_Obj** objv, int flags);
 
+typedef struct _ARecMethod {
+    char	*name;
+    void	*method;
+    int		 flags;
+} ARecMethod;
+
 typedef struct _ARecType {
     Tcl_Obj		*nameobj;
     long	  	 size;
@@ -68,6 +74,10 @@ typedef struct _ARecType {
 
     struct _ARecType 	*shadow;
     struct _ARecField 	*instances;
+
+    long		nmethods;
+    long		amethods;
+    struct _ARecMethod  *methods;
 } ARecType;
 
 typedef struct _ARecField {
