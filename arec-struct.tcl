@@ -10,8 +10,8 @@ package require critcl 3.1
 package provide arec-struct 0.4
 
 source perm.tcl
-source ../tna/template.tcl
-source ../tna/functional.tcl
+source template.tcl
+source functional.tcl
 
 set Types [arec::types get name]
 set Sizes [arec::types get size]
@@ -80,5 +80,5 @@ proc structN { n } {
 #structN 1
 structN 2
 structN 3
-structN 4
+#structN 4
 
