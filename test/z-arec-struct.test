@@ -6,7 +6,7 @@ package require tcltest
 package require arec
 package require arec-struct
 
-source ../perm.tcl
+source ../jbr.tcl/perm.tcl
 
 proc enumerate { list } {
     set i 0

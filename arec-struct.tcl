@@ -9,9 +9,9 @@ package require critcl 3.1
 
 package provide arec-struct 0.4
 
-source perm.tcl
-source template.tcl
-source functional.tcl
+source jbr.tcl/perm.tcl
+source jbr.tcl/func.tcl
+source jbr.tcl/template.tcl
 
 set Types [arec::types get name]
 set Sizes [arec::types get size]
