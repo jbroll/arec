@@ -55,10 +55,8 @@ namespace eval arec {
 	extern int ARecDelInst();
     }
 
-    critcl::ccommand add_type { data ip objc objv } { ARecTypeCreateObjCmd(ip, objc, objv); }
-    critcl::cinit {
-	ARecInit(ip);
-    } { }
+    critcl::ccommand add_type { data ip objc objv } { return ARecTypeCreateObjCmd(ip, objc, objv); }
+    critcl::cinit { ARecInit(ip); } { }
 
     critcl::cproc    ARecTypeSize {} long { return sizeof(ARecType); }
     critcl::cproc    DblSize      {} long { return sizeof(double); }

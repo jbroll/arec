@@ -10,12 +10,20 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <ctype.h>
 
 #include <tcl.h>
 #include "arec.h"
 
 ARecType  *ARecTypeType = NULL;
 ARecField *ARecTypeInst = NULL;
+
+
+int  ARecTypeFields   (Tcl_Interp *ip, ARecType *type, int types, int fields, int offset, int objc, Tcl_Obj **objv);
+int  ARecTypeAddField (Tcl_Interp *ip, ARecType *type, int objc, Tcl_Obj **objv);
+void ARecTypeAddField1(ARecType *type, Tcl_Obj *nameobj, int length, ARecType *field);
+void ARecRealloc(ARecField *inst, int nrecs, int more);
+int ARecRange(Tcl_Interp *ip, ARecField *inst, int *objc, Tcl_Obj ***objv, int *n, int *m, int *islist);
 
 Tcl_Obj *ARecGetDouble(Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return Tcl_NewDoubleObj(*((double *) here)); }
 Tcl_Obj *ARecGetFloat( Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags) { return Tcl_NewDoubleObj(*((float  *) here)); }
@@ -240,6 +248,8 @@ int ARecDelInst(ClientData data)
 
     Tcl_Free((void *) inst->recs);
     Tcl_Free((void *) inst);
+
+    return TCL_OK;
 }
 
 int ARecDelType(ClientData data)
@@ -257,7 +267,9 @@ int ARecDelType(ClientData data)
     Tcl_Free((void *) type->shadow);
     Tcl_Free((void *) type->field);
 
-    ARecInstDeleteRecs(ARecTypeInst, type, 1);
+    ARecInstDeleteRecs(ARecTypeInst, (char *) type, 1);
+
+    return TCL_OK;
 }
 
 int ARecTypeObjCmd(data, ip, objc, objv)
@@ -306,7 +318,7 @@ ARecType *ARecTypeCreate(Tcl_Interp *ip, Tcl_Obj *name, int stype)
     return type;
 }
 
-int ARecTypeCreateObjCmd(Tcl_Interp *ip, int objc, Tcl_Obj **objv)
+int ARecTypeCreateObjCmd(Tcl_Interp *ip, int objc, Tcl_Obj *const *objv)
 {
 	Tcl_Obj     *result = Tcl_GetObjResult(ip);
 
@@ -453,7 +465,7 @@ int ARecInstObjCmd(data, ip, objc, objv)
     );
 
     ARecCmd(ip, inst, "getbytes", " ", objc == 2, objc, objv,
-	Tcl_SetByteArrayObj(result, recs, m * inst->type->size);
+	Tcl_SetByteArrayObj(result, (unsigned char *) recs, m * inst->type->size);
 	return TCL_OK;
     );
     ARecCmd(ip, inst, "getptr", " ", objc == 2, objc, objv,
@@ -728,7 +740,7 @@ int ARecIndex(ARecField *inst, Tcl_Obj *result, int *objc, Tcl_Obj ***objv, int 
     return TCL_OK;
 }
 
-ARecRealloc(ARecField *inst, int nrecs, int more) 
+void ARecRealloc(ARecField *inst, int nrecs, int more) 
 {
     if ( nrecs >  inst->arecs ) {
 	inst->arecs = nrecs + more;

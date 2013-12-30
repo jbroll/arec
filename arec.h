@@ -117,3 +117,7 @@ typedef struct arec_PtrAlign { void  *x; char y; } ARecPtrAlign;
 typedef struct arec_DblAlign { double x; char y; } ARecDblAlign;
 
 
+void ARecInit(Tcl_Interp *ip);
+int ARecTypeCreateObjCmd(Tcl_Interp *ip, int objc, Tcl_Obj *const*objv);
+
+int ARecInstDeleteRecs(ARecField *inst, char *recs, int m);
