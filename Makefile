@@ -24,7 +24,7 @@ lib/arec/macosx-x86_64/arec.dylib : arec.c arec.h arec.tcl
 	critcl -target macosx-x86_64 -pkg arec
 
 
-test : arec-struct.test test.$(OS)
+test : arec-struct.$(OS) test.$(OS)
 
 test.Darwin : arec-struct.test FORCE
 	arch -i386   /usr/local/bin/tclsh8.6 ./arec-test.tcl 
@@ -33,8 +33,12 @@ test.Darwin : arec-struct.test FORCE
 test.Linux : FORCE
 	tclsh8.6 ./arec-test.tcl
 
-arec-struct.test : lib/arec-struct/macosx-x86_64/arec-struct.dylib lib/arec-struct/macosx-ix86/arec-struct.dylib
+arec-struct.Darwin : lib/arec-struct/macosx-x86_64/arec-struct.dylib lib/arec-struct/macosx-ix86/arec-struct.dylib
+arec-struct.Linux  :  lib/arec-struct/linux-x86_64/arec-struct.so
 
+
+lib/arec-struct/linux-x86_64/arec-struct.so : arec-struct.tcl
+	critcl -pkg arec-struct
 
 lib/arec-struct/macosx-x86_64/arec-struct.dylib : arec-struct.tcl
 	critcl -target macosx-x86_64 -pkg arec-struct
