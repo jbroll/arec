@@ -7,7 +7,7 @@ all: arec.$(OS)
 arec.Darwin : arec.Darwin.i386 arec.Darwin.x86_64
 arec.Linux  :                  arec.Linux.x86_64
 
-AREC_SRC = arec.c arec-inst.c arec.h arec.tcl
+AREC_SRC = arec.c arec.h arec.tcl
 
 
 arec.Darwin.i386	: lib/arec/macosx-ix86/arec.dylib
