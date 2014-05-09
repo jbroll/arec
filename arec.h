@@ -22,13 +22,6 @@
 	}								\
     }
 
-#define ARecUnknownMethod(interp, inst, objc, objv)			\
-    Tcl_AppendResult(interp						\
-	    , Tcl_GetString(inst->nameobj)				\
-	    , objc == 1 ? " no method?" : " unknown method: "		\
-	    , objc == 1 ? NULL         : Tcl_GetString(objv[1]), NULL);
-
-
 #define ARecGetIntFromObj(interp, obj, name)					\
 	if ( Tcl_GetIntFromObj(interp, obj, &name) != TCL_OK ) {		\
 	    Tcl_SetStringObj(result, "cannot convert " #name " to int", -1);	\
@@ -53,12 +46,6 @@ typedef struct _ARecType *ARecTypePtr;		// This is strange!
 typedef int       (*ARecSetFunc)(Tcl_Interp *ip, ARecTypePtr type, Tcl_Obj *, void *, int m, int objc, Tcl_Obj** objv, int flags);
 typedef Tcl_Obj*  (*ARecGetFunc)(Tcl_Interp *ip, ARecTypePtr type,            void *, int m, int objc, Tcl_Obj** objv, int flags);
 
-typedef struct _ARecMethod {
-    char	*name;
-    void	*method;
-    int		 flags;
-} ARecMethod;
-
 typedef struct _ARecType {
     Tcl_Obj		*nameobj;
     long	  	 size;
@@ -74,10 +61,6 @@ typedef struct _ARecType {
 
     struct _ARecType 	*shadow;
     struct _ARecField 	*instances;
-
-    long		nmethods;
-    long		amethods;
-    struct _ARecMethod  *methods;
 } ARecType;
 
 typedef struct _ARecField {

@@ -16,9 +16,9 @@ proc iota { fr to { in 1 } } {
 ::tcltest::configure -testdir [file dirname [file normalize [info script]]] -singleproc 1  ; # -verbose bps
 
 ::tcltest::test rec-dtype-size  { dtype size     } -body { arec::type  size   }		  -result [arec::ARecTypeSize]
-::tcltest::test rec-dtype-types { dtype types    } -body { arec::type types   }  	  -result {Tcl_Obj* long long long long long long long long long long long long long}
-::tcltest::test rec-dtype-types { dtype types    } -body { arec::type names   }  	  -result {name size align stype nfield afield fields set get shadow inst nmethod amethod methods}
-::tcltest::test rec-dtype-types { dtype types    } -body { arec::type fields  }  	  -result {Tcl_Obj* name long size long align long stype long nfield long afield long fields long set long get long shadow long inst long nmethod long amethod long methods}
+::tcltest::test rec-dtype-types { dtype types    } -body { arec::type types   }  	  -result {Tcl_Obj* long long long long long long long long long long}
+::tcltest::test rec-dtype-types { dtype types    } -body { arec::type names   }  	  -result {name size align stype nfield afield fields set get shadow inst}
+::tcltest::test rec-dtype-types { dtype types    } -body { arec::type fields  }  	  -result {Tcl_Obj* name long size long align long stype long nfield long afield long fields long set long get long shadow long inst}
 
 
 set Ps [arec::PtrSize]
