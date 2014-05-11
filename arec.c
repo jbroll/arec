@@ -207,7 +207,31 @@ int ARecSetTclObj(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int 
 
     return TCL_OK;
 }
+
 int ARecSetStruct(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags) {
+    	int i, j;
+	Tcl_Obj *result = Tcl_GetObjResult(ip);
+
+	int	  elemc;
+	Tcl_Obj	**elemv;
+
+	if ( Tcl_ListObjGetElements(ip, obj, &elemc, &elemv) == TCL_ERROR ) {
+	    return TCL_ERROR;
+	}
+
+        if ( elemc % 2 ) {
+	    Tcl_AppendStringsToObj(result
+		    , Tcl_GetString(type->nameobj) , " cannot set fields from an odd number of elements"
+		    , NULL);
+	    return TCL_ERROR;
+	}
+
+	for ( i = 0; i < elemc; i += 2 ) {
+	    if ( ARecSetField(ip, ARecLookupField(type->nfield, type->field, elemv[i+0]), recs, elemv[i+1]) == TCL_ERROR ) {
+		Tcl_AppendStringsToObj(result, Tcl_GetString(type->nameobj), " cannot set field ", Tcl_GetString(elemv[i+0]), " from ", Tcl_GetString(elemv[i+1]), NULL);
+		return TCL_ERROR;
+	    }
+	}
 
     return TCL_OK;
 }
@@ -305,8 +329,6 @@ int ARecTypeObjCmd(data, ip, objc, objv)
 	return ARecTypeAddField(ip, type, objc, objv);
     );
 
-    ARecUnknownMethod(ip, type, objc, objv);
-
     return TCL_ERROR;
 }
 
@@ -360,6 +382,20 @@ typedef struct _ARecPath {
     int		list;
 } ARecPath;
 
+ARecCallAction(AReacPath *path, int npath, Tcl_Obj *objv, int objc, action, Tcl_Obj *result) {
+    for ( int i = path[0].first; i < path[0].last; i++ ) {
+	if ( npath == 1 ) {
+	    action();
+
+	} else {
+	    ARecCallAction(&path[1], npath-1, objv, objc);
+	}
+    }
+
+    return reply;
+}
+
+
 int ARecInstObjCmd(data, ip, objc, objv)
     ClientData       data;
     Tcl_Interp      *ip;
@@ -368,7 +404,7 @@ int ARecInstObjCmd(data, ip, objc, objv)
 {
     ARecField *inst   = (ARecField *) data;
     Tcl_Obj   *result = Tcl_GetObjResult(ip);
-    Tcl_Obj   *action = (objv++)[0]; 			objc--;
+    Tcl_Obj   *actionName = (objv++)[0]; 		objc--;
 
     ARecPath   path[10];
     int        npath = 0;
@@ -415,24 +451,24 @@ int ARecInstObjCmd(data, ip, objc, objv)
     if ( i >= 10 ) { fprintf(stderr, "huh?\n"); exit(1); }
 
     
-    ARecCmd(ip, this, ".type", " ", objc >= 1, objc, objv,
+    ARecCmd(ip, this, "type", " ", objc >= 1, objc, objv,
 	ARecTypeObjCmd(inst->type, ip, --objc, &objv[1]);	
 
 	return TCL_OK;
     );
 
-    ARecCmd(ip, this, ".size", " ", objc >= 1, objc, objv,
+    ARecCmd(ip, this, "size", " ", objc >= 1, objc, objv,
 	Tcl_SetObjResult(ip, Tcl_NewIntObj(this->type->size));	
 
 	return TCL_OK;
     );
 
-    ARecCmd(ip, this, ".length", " ", objc == 2 || objc == 3, objc, objv,
+    ARecCmd(ip, this, "length", " ", objc == 2 || objc == 3, objc, objv,
 	int n;
 
 	if ( objc == 3 ) {
 	    if ( npath > 1 ) {
-		Tcl_AppendStringsToObj(result , Tcl_GetString(inst->type->nameobj), " cannpt set inner length ", NULL);
+		Tcl_AppendStringsToObj(result , Tcl_GetString(inst->type->nameobj), " cannot set inner length ", NULL);
 		
 		return TCL_ERROR;
 	    }
@@ -447,6 +483,9 @@ int ARecInstObjCmd(data, ip, objc, objv)
 
 	return TCL_OK;
     );
+
+    ARecCallAction(path, npath, objv, objc, action, result);
+
 
 
     ARecCmd(ip, inst, "set", " field value ...", objc >= 3, objc, objv,
