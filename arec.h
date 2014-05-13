@@ -43,8 +43,8 @@
 
 typedef struct _ARecType *ARecTypePtr;		// This is strange!
 
-typedef int       (*ARecSetFunc)(Tcl_Interp *ip, ARecTypePtr type, Tcl_Obj *, void *, int m, int objc, Tcl_Obj** objv, int flags);
-typedef Tcl_Obj*  (*ARecGetFunc)(Tcl_Interp *ip, ARecTypePtr type,            void *, int m, int objc, Tcl_Obj** objv, int flags);
+typedef int       (*ARecSetFunc)(Tcl_Interp *ip, ARecTypePtr type, Tcl_Obj *, void *, int m, int objc, Tcl_Obj*const* objv, int flags);
+typedef Tcl_Obj*  (*ARecGetFunc)(Tcl_Interp *ip, ARecTypePtr type,            void *, int m, int objc, Tcl_Obj*const* objv, int flags);
 
 typedef struct _ARecType {
     Tcl_Obj		*nameobj;
@@ -72,22 +72,22 @@ typedef struct _ARecField {
     int			 arecs;
 } ARecField;
 
-Tcl_Obj *ARecGetDouble(Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags);
-Tcl_Obj *ARecGetFloat( Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags);
-Tcl_Obj *ARecGetInt(   Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj** objv, int flags);
+Tcl_Obj *ARecGetDouble(Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj*const* objv, int flags);
+Tcl_Obj *ARecGetFloat( Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj*const* objv, int flags);
+Tcl_Obj *ARecGetInt(   Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj*const* objv, int flags);
 
-int ARecSetDouble(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags);
-int ARecSetFloat( Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags);
-int ARecSetInt(   Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj** objv, int flags);
+int ARecSetDouble(Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj*const* objv, int flags);
+int ARecSetFloat( Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj*const* objv, int flags);
+int ARecSetInt(   Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int m, int objc, Tcl_Obj*const* objv, int flags);
 
 int ARecNewInst(Tcl_Interp *interp, int objc, Tcl_Obj **objv, ARecType *type);
-int ARecSetFromArgs(Tcl_Interp *interp, ARecType *type, char *recs, int m, int objc, Tcl_Obj **objv, int flags);
-int ARecSetFromList(Tcl_Interp *interp, ARecType *type, char *recs, int m, int objc, Tcl_Obj **objv, int flags);
-int ARecSetFromDict(Tcl_Interp *interp, ARecType *type, char *recs, int m, int objc, Tcl_Obj **objv, int flags);
+int ARecSetFromArgs(Tcl_Interp *interp, ARecType *type, char *recs, int m, int objc, Tcl_Obj *const*objv, int flags);
+int ARecSetFromList(Tcl_Interp *interp, ARecType *type, char *recs, int m, int objc, Tcl_Obj *const*objv);
+int ARecSetFromDict(Tcl_Interp *interp, ARecType *type, char *recs, int m, int objc, Tcl_Obj *const*objv);
 
 ARecType *ARecTypeAddType(ARecField *types, Tcl_Obj *nameobj, int size, int align, int stype, ARecSetFunc set, ARecGetFunc get);
 
-Tcl_Obj *ARecGetStruct(Tcl_Interp *ip, ARecType *type, void *recs, int m, int objc, Tcl_Obj **objv, int flags);
+Tcl_Obj *ARecGetStruct(Tcl_Interp *ip, ARecType *type, void *recs, int m, int objc, Tcl_Obj *const*objv, int flags);
 
 ARecType *ARecLookupType(Tcl_Obj *nameobj);
 
