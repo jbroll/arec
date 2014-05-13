@@ -385,7 +385,7 @@ typedef struct _ARecPath {
 } ARecPath;
 
 
-ARecCallAction(Tcl_Interp *ip, ARecPath *path, int npath, Tcl_Obj **objv, int objc, Tcl_ObjCmdProc *action, Tcl_Obj *result) {
+int ARecCallAction(Tcl_Interp *ip, ARecPath *path, int npath, Tcl_Obj **objv, int objc, Tcl_ObjCmdProc *action, Tcl_Obj *result) {
     int j;
 
     if ( npath == 1 ) {
