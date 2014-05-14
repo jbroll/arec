@@ -7,6 +7,8 @@
 #define AREC_STRUCT	0
 #define AREC_UNION	1
 
+#define AREC_TCL_VALUE	-20
+
 #define ARecPadd(offset, align) ((offset + align - 1) & ~(align - 1))
 
 #define ARecCmd(interp, inst, name, args, expr, objc, objv, code)	\
