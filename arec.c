@@ -237,10 +237,13 @@ int ARecSetStruct  (Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, in
 	    if ( ARecSetFromDict(ip, type, here, 1, 1, &objv[i%objc]) == TCL_ERROR ) {
 		return TCL_ERROR;
 	    }
+	    here += type->size;
 	}
     } else {
 	return ARecSetFromDict(ip, type, here, 1, 1, &obj);
     }
+
+    return TCL_OK;
 }
 
 ARecType *ARecLookupType(Tcl_Obj *nameobj)
@@ -564,6 +567,7 @@ int ARecInstObjCmd(data, ip, objc, objv)
 
 	return TCL_OK;
     }
+
 
 
     /* */  if ( !strcmp(actionName, "set")	) {
