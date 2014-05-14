@@ -519,9 +519,8 @@ int ARecInstObjCmd(data, ip, objc, objv)
         if ( !strcmp(Tcl_GetString(objv[0]), "=") ) { objv++; objc--;      break; }
 
         if ( !(next = ARecLookupField(this->type->nfield, this->type->field, objv[0])) ) {
-		objv++; objc--; break;
-	} else {
-	}
+		break;
+	} 
 
 	if ( !next->type->nfield ) 				 { break; }
 
@@ -554,9 +553,8 @@ int ARecInstObjCmd(data, ip, objc, objv)
 	return TCL_OK;
     }
 
-printf("xxx %s %d\n", actionName, objc);
     if ( !strcmp(actionName, "type") && objc >= 1 ) {
-	ARecTypeObjCmd(this->type, ip, --objc, &objv[1]);	
+	ARecTypeObjCmd(this->type, ip, ++objc, --objv);	
 
 	return TCL_OK;
     }
