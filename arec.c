@@ -521,6 +521,7 @@ int ARecInstObjCmd(data, ip, objc, objv)
 	if ( objv[0]->typePtr == TclListType ) 				 { break; }
 	if ( objv[0]->typePtr == TclDictType ) 				 { break; }
         if ( !strcmp(Tcl_GetString(objv[0]), "=") ) { objv++; objc--;      break; }
+        if ( !strcmp(Tcl_GetString(objv[0]), ":") ) { objv++; objc--;      break; }
 
         if ( !(next = ARecLookupField(this->type->nfield, this->type->field, objv[0])) ) {
 		break;
@@ -648,6 +649,11 @@ int ARecInstObjCmd(data, ip, objc, objv)
 	}
 
 	path[npath-1].clientData = cmdInfo.objClientData;
+
+	objc++;
+	objv--;
+
+	Tcl_SetStringObj(objv[0], cmdName, -1);
 
 	return ARecCallAction(ip, path, npath, objv, objc, cmdInfo.objProc, result);
     }
