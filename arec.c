@@ -473,9 +473,15 @@ int ARecInstObjCmd(data, ip, objc, objv)
     Tcl_Obj        **objv;
 {
     objc--; objv++;
+    Tcl_Obj   *result = Tcl_GetObjResult(ip);
+
+    if ( objc == 0 ) {
+	Tcl_AppendStringsToObj(result , " no action ", NULL);
+
+	return TCL_ERROR;
+    }
 
     ARecField *inst   = (ARecField *) data;
-    Tcl_Obj   *result = Tcl_GetObjResult(ip);
     Tcl_Obj   *actionObj = (objv++)[0]; 		objc--;
 
     ARecPath   path[10];
@@ -484,6 +490,8 @@ int ARecInstObjCmd(data, ip, objc, objv)
 
     ARecField	*this = inst;
     ARecField	*next;
+
+
 
     // Parse any selection / iteration path
     //
