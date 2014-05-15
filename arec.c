@@ -444,7 +444,7 @@ int ARecGetDictAction(void *data, Tcl_Interp *ip, int objc, Tcl_Obj *const*objv)
     Tcl_Obj *reply;
     ARecPath *path = (ARecPath *) data;
 
-    if ( !(reply = ARecGetStruct(ip, path->inst->type, path->recs, path->last-path->first+1, objc, objv, ( path->array ? AREC_ISLIST : 0 ) | AREC_ASDICT)) ) {
+    if ( !(reply = ARecGetStruct(ip, path->inst->type, path->recs+path->first*path->inst->type->size, path->last-path->first+1, objc, objv, ( path->array ? AREC_ISLIST : 0 ) | AREC_ASDICT)) ) {
 	return TCL_ERROR;
     }
 
@@ -456,7 +456,7 @@ int ARecGetListAction(void *data, Tcl_Interp *ip, int objc, Tcl_Obj *const*objv)
     Tcl_Obj *reply;
     ARecPath *path = (ARecPath *) data;
 
-    if ( !(reply = ARecGetStruct(ip, path->inst->type, path->recs, path->last-path->first+1, objc, objv, path->array ? AREC_ISLIST : 0)) ) {
+    if ( !(reply = ARecGetStruct(ip, path->inst->type, path->recs+path->first*path->inst->type->size, path->last-path->first+1, objc, objv, path->array ? AREC_ISLIST : 0)) ) {
 	return TCL_ERROR;
     }
 
