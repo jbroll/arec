@@ -369,15 +369,6 @@ int ARecInstDeleteRecs(ARecField *inst, char *recs, int m)
     return TCL_OK;
 }
 
-typedef struct _ARecPath {
-    ARecField	*inst;
-    void	*recs;
-    int		 array;
-    int		 first;
-    int		 last;
-    void	*clientData;
-} ARecPath;
-
 
 int ARecCallAction(Tcl_Interp *ip, ARecPath *path, int npath, Tcl_Obj **objv, int objc, Tcl_ObjCmdProc *action, Tcl_Obj *result) {
     int j;
@@ -632,12 +623,12 @@ int ARecInstObjCmd(data, ip, objc, objv)
 
 	char cmdName[256];
 
-	snprintf(cmdName, 256, "::arec::%s::%s", typeName, actionName);
+	snprintf(cmdName, 256, "%s::%s", typeName, actionName);
 
 	if ( ARecTypedefInfo.deleteProc == NULL ) {
 	    if ( !Tcl_GetCommandInfo(ip, "::arec::typedef", &ARecTypedefInfo) ) {
-		printf("no typedef info\n");
-		exit(1);
+		Tcl_AppendStringsToObj(result , "no typedef info? ", NULL);
+		return TCL_ERROR;
 	    }
 	}
 

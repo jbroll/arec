@@ -48,6 +48,7 @@ typedef struct _ARecType *ARecTypePtr;		// This is strange!
 typedef int       (*ARecSetFunc)(Tcl_Interp *ip, ARecTypePtr type, Tcl_Obj *, void *, int m, int objc, Tcl_Obj*const* objv, int flags);
 typedef Tcl_Obj*  (*ARecGetFunc)(Tcl_Interp *ip, ARecTypePtr type,            void *, int m, int objc, Tcl_Obj*const* objv, int flags);
 
+
 typedef struct _ARecType {
     Tcl_Obj		*nameobj;
     long	  	 size;
@@ -73,6 +74,16 @@ typedef struct _ARecField {
     int			 nrecs;
     int			 arecs;
 } ARecField;
+
+typedef struct _ARecPath {
+    ARecField	*inst;
+    void	*recs;
+    int		 array;
+    int		 first;
+    int		 last;
+    void	*clientData;
+} ARecPath;
+
 
 Tcl_Obj *ARecGetDouble(Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj*const* objv, int flags);
 Tcl_Obj *ARecGetFloat( Tcl_Interp *ip, ARecType *type, void *here, int m, int objc, Tcl_Obj*const* objv, int flags);
