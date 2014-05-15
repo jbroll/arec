@@ -45,17 +45,17 @@ if 0 {
     ::arec::types no method?}
 }
 
-::tcltest::test rec-types-length   { dtype size     } -body { arec::types length } 	  		   -result 12
-::tcltest::test rec-types-names    { dtype types    } -body { arec::types get 0 end name  }  		   -result {char uchar short ushort int uint long ulong float double string Tcl_Obj*}
+::tcltest::test rec-types-length   { dtype size     } -body { arec::types length } 	  		   -result 13
+::tcltest::test rec-types-names    { dtype types    } -body { arec::types get 0 end name  }  		   -result {char uchar short ushort int uint long ulong float double string char* Tcl_Obj*}
 ::tcltest::test rec-dtypes-get     { dtypes get     } -body { arec::types get 0 end name size align
-	} -result [subst {{char 1 1} {uchar 1 1} {short 2 2} {ushort 2 2} {int 4 4} {uint 4 4} {long $Ls $La} {ulong $Ls $La} {float 4 4} {double $Ds $Da} {string $Ps $Pa} {Tcl_Obj* $Ps $Pa}}]
+	} -result [subst {{char 1 1} {uchar 1 1} {short 2 2} {ushort 2 2} {int 4 4} {uint 4 4} {long $Ls $La} {ulong $Ls $La} {float 4 4} {double $Ds $Da} {string $Ps $Pa} {char* $Ps $Pa} {Tcl_Obj* $Ps $Pa}}]
 ::tcltest::test rec-dtypes-getlist { dtypes getlist } -body { arec::types getlist 0 end name size align
-	} -result [subst {{char 1 1} {uchar 1 1} {short 2 2} {ushort 2 2} {int 4 4} {uint 4 4} {long $Ls $La} {ulong $Ls $La} {float 4 4} {double $Ds $Da} {string $Ps $Pa} {Tcl_Obj* $Ps $Pa}}]
+	} -result [subst {{char 1 1} {uchar 1 1} {short 2 2} {ushort 2 2} {int 4 4} {uint 4 4} {long $Ls $La} {ulong $Ls $La} {float 4 4} {double $Ds $Da} {string $Ps $Pa} {char* $Ps $Pa} {Tcl_Obj* $Ps $Pa}}]
 ::tcltest::test rec-dtypes-getdict { dtypes getdict } -body { arec::types getdict 0 end name size align
-	} -result [subst {{name char size 1 align 1} {name uchar size 1 align 1} {name short size 2 align 2} {name ushort size 2 align 2} {name int size 4 align 4} {name uint size 4 align 4} {name long size $Ls align $La} {name ulong size $Ls align $La} {name float size 4 align 4} {name double size $Ds align $Da} {name string size $Ps align $Pa} {name Tcl_Obj* size $Ps align $Pa}}]
+	} -result [subst {{name char size 1 align 1} {name uchar size 1 align 1} {name short size 2 align 2} {name ushort size 2 align 2} {name int size 4 align 4} {name uint size 4 align 4} {name long size $Ls align $La} {name ulong size $Ls align $La} {name float size 4 align 4} {name double size $Ds align $Da} {name string size $Ps align $Pa} {name char* size $Ps align $Pa} {name Tcl_Obj* size $Ps align $Pa}}]
 
 
-foreach type [arec::types get name] reply { 1 1 1 1 1 1 1 1 1.0 1.0 1 } {
+foreach type [arec::types get name] reply { 1 1 1 1 1 1 1 1 1.0 1.0 1 1 } {
     if { $type eq "Tcl_Obj*" } { continue }
 
     ::tcltest::test rec-$type "each type: $type" -body {

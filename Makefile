@@ -37,7 +37,7 @@ test.Linux : arec-test.tcl
 
 arec-struct.Linux  : lib/arec-struct/linux-x86_64/arec-struct.so
 
-lib/arec-struct/linux-x86_64-x86_64/arec-struct.dylib : arec-struct.tcl
+lib/arec-struct/linux-x86_64/arec-struct.so : arec-struct.tcl
 	critcl -pkg arec-struct
 
 arec-struct.Darwin : lib/arec-struct/macosx-x86_64/arec-struct.dylib lib/arec-struct/macosx-ix86/arec-struct.dylib

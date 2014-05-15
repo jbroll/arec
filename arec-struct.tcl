@@ -13,8 +13,7 @@ source jbr.tcl/perm.tcl
 source jbr.tcl/func.tcl
 source jbr.tcl/template.tcl
 
-set Types [arec::types get name]
-set Sizes [arec::types get size]
+set Types [lremove [arec::types get name] char*]
 
 array set TMap {
     char	char

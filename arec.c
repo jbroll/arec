@@ -19,10 +19,10 @@ ARecType  *ARecTypeType = NULL;
 ARecField *ARecTypeInst = NULL;
 
 
-static Tcl_ObjType *TclStringType;
-static Tcl_ObjType *TclIntType;
 static Tcl_ObjType *TclDictType;
 static Tcl_ObjType *TclListType;
+
+static Tcl_CmdInfo ARecTypedefInfo;
 
 
 int   ARecTypeFields   (Tcl_Interp *ip, ARecType *type, int types, int fields, int offset, int objc, Tcl_Obj **objv);
@@ -375,6 +375,7 @@ typedef struct _ARecPath {
     int		 array;
     int		 first;
     int		 last;
+    void	*clientData;
 } ARecPath;
 
 
@@ -506,7 +507,7 @@ int ARecInstObjCmd(data, ip, objc, objv)
 
 	    if ( path[npath-1].first < 0 || path[npath-1].last > this->nrecs )  {
 		char index[50];
-		sprintf(index, "%d %d : %d", path[npath-1].first, path[npath-1].last, this->nrecs);
+		snprintf(index, 50, "%d %d : %d", path[npath-1].first, path[npath-1].last, this->nrecs);
 
 		Tcl_AppendStringsToObj(result, Tcl_GetString(inst->nameobj), " : index out of range, path ", index, NULL);
 
@@ -568,8 +569,6 @@ int ARecInstObjCmd(data, ip, objc, objv)
 	return TCL_OK;
     }
 
-
-
     /* */  if ( !strcmp(actionName, "set")	) {
 	path[0].recs = ARecRealloc(path[0].inst, path->last+1, 10);
 
@@ -586,7 +585,7 @@ int ARecInstObjCmd(data, ip, objc, objv)
 
     if ( path[0].first < 0 || + path[0].last > path[0].inst->nrecs ) {			// All commands below here do not allow extension
 	char index[50];
-	sprintf(index, " %d %d : %d ", path[0].first, path[0].last, path[0].inst->nrecs);
+	snprintf(index, 50, " %d %d : %d ", path[0].first, path[0].last, path[0].inst->nrecs);
 
 	Tcl_AppendStringsToObj(result , Tcl_GetString(inst->type->nameobj), " index out of range ", index, NULL);
 	
@@ -618,9 +617,40 @@ int ARecInstObjCmd(data, ip, objc, objv)
 	return ARecInstDeleteRecs(inst, path->recs+this->type->size*path->first, path->first-path->last+1);
     } 
 
-    //ARecUnknownMethod(ip, inst, objc, objv);
+    {
+	Tcl_CmdInfo cmdInfo;
+	char *typeName = Tcl_GetString(inst->type->nameobj);
 
-    return TCL_ERROR;
+	char cmdName[256];
+
+	snprintf(cmdName, 256, "::arec::%s::%s", typeName, actionName);
+
+	if ( ARecTypedefInfo.deleteProc == NULL ) {
+	    if ( !Tcl_GetCommandInfo(ip, "::arec::typedef", &ARecTypedefInfo) ) {
+		printf("no typedef info\n");
+		exit(1);
+	    }
+	}
+
+	if ( !Tcl_GetCommandInfo(ip, cmdName, &cmdInfo) ) {
+	    Tcl_AppendStringsToObj(result , "unknown method ", cmdName, " of type ", typeName, NULL);
+	    return TCL_ERROR;
+	}
+
+	if ( !cmdInfo.isNativeObjectProc ) {
+	    Tcl_AppendStringsToObj(result , cmdName, " must be an object proc.", NULL);
+	    return TCL_ERROR;
+	}
+
+	if ( cmdInfo.deleteProc == ARecTypedefInfo.deleteProc ) {
+	    Tcl_AppendStringsToObj(result , cmdName, " must be native command.", NULL);
+	    return TCL_ERROR;
+	}
+
+	path[npath-1].clientData = cmdInfo.objClientData;
+
+	return ARecCallAction(ip, path, npath, objv, objc, cmdInfo.objProc, result);
+    }
 }
 
 ARecField *ARecInstCreate(Tcl_Interp *ip, Tcl_Obj *nameobj, ARecType *type, int n)
@@ -1121,13 +1151,11 @@ void ARecInit(Tcl_Interp *ip) {
     ARecType *type;
     int i;
 
+    ARecTypedefInfo.deleteProc = NULL;
     
-    TclStringType = Tcl_GetObjType("string");
-    TclIntType    = Tcl_GetObjType("int");
     TclDictType   = Tcl_GetObjType("dict");
     TclListType   = Tcl_GetObjType("list");
 
-    Tcl_Obj *tclobjString = Tcl_NewStringObj("string", -1);
     Tcl_Obj *tclobjLong   = Tcl_NewStringObj("long", -1);
     Tcl_Obj *tclobjTclObj = Tcl_NewStringObj("Tcl_Obj*",-1);
 
@@ -1141,18 +1169,19 @@ void ARecInit(Tcl_Interp *ip) {
 
     ARecTypeInst = ARecInstCreate(ip, Tcl_NewStringObj("::arec::types", -1), ARecTypeType, 0);
 
-    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("char",   -1), sizeof(char)	  	, 1,      0, ARecSetChar,	ARecGetChar   );
-    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("uchar",  -1), sizeof(unsigned char) , 1,      0, ARecSetUChar,	ARecGetUChar  );
-    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("short",  -1), sizeof(short)	  	, 2,      0, ARecSetShort,	ARecGetShort  );
-    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("ushort", -1), sizeof(unsigned short), 2,      0, ARecSetUShort, 	ARecGetUShort );
-    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("int",    -1), sizeof(int)		, 4,      0, ARecSetInt,	ARecGetInt    );
-    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("uint",   -1), sizeof(unsigned int)	, 4,      0, ARecSetUInt,	ARecGetUInt    );
-    ARecTypeAddType(ARecTypeInst, tclobjLong,	                  sizeof(long)	  	, lalign, 0, ARecSetLong,	ARecGetLong   );
-    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("ulong",  -1), sizeof(long)	  	, lalign, 0, ARecSetULong,	ARecGetULong   );
-    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("float",  -1), sizeof(float)	  	, 4,      0, ARecSetFloat,	ARecGetFloat  );
-    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("double", -1), sizeof(double)	, dalign, 0, ARecSetDouble, 	ARecGetDouble );
-    ARecTypeAddType(ARecTypeInst, tclobjString,	                  sizeof(char *)	, palign, 0, ARecSetString, 	ARecGetString );
-    ARecTypeAddType(ARecTypeInst, tclobjTclObj,		          sizeof(Tcl_Obj *)	, palign, 0, ARecSetTclObj, 	ARecGetTclObj );
+    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("char",   -1), sizeof(char)	  	, 1,      0, ARecSetChar,	ARecGetChar  );
+    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("uchar",  -1), sizeof(unsigned char) , 1,      0, ARecSetUChar,	ARecGetUChar );
+    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("short",  -1), sizeof(short)	  	, 2,      0, ARecSetShort,	ARecGetShort );
+    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("ushort", -1), sizeof(unsigned short), 2,      0, ARecSetUShort, 	ARecGetUShort);
+    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("int",    -1), sizeof(int)		, 4,      0, ARecSetInt,	ARecGetInt   );
+    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("uint",   -1), sizeof(unsigned int)	, 4,      0, ARecSetUInt,	ARecGetUInt  );
+    ARecTypeAddType(ARecTypeInst, tclobjLong,	                  sizeof(long)	  	, lalign, 0, ARecSetLong,	ARecGetLong  );
+    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("ulong",  -1), sizeof(long)	  	, lalign, 0, ARecSetULong,	ARecGetULong );
+    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("float",  -1), sizeof(float)	  	, 4,      0, ARecSetFloat,	ARecGetFloat );
+    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("double", -1), sizeof(double)	, dalign, 0, ARecSetDouble, 	ARecGetDouble);
+    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("string", -1), sizeof(char *)	, palign, 0, ARecSetString, 	ARecGetString);
+    ARecTypeAddType(ARecTypeInst, Tcl_NewStringObj("char*",  -1), sizeof(char *)	, palign, 0, ARecSetString, 	ARecGetString);
+    ARecTypeAddType(ARecTypeInst, tclobjTclObj,		          sizeof(Tcl_Obj *)	, palign, 0, ARecSetTclObj, 	ARecGetTclObj);
 
     ARecTypeType->size = 0;
 
