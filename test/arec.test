@@ -68,28 +68,31 @@ foreach type [arec::types get name] reply { 1 1 1 1 1 1 1 1 1.0 1.0 1 } {
     } -result $reply
 }
 
-
-foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
-    ::tcltest::test rec-$i { create type } -body {
+::tcltest::test inst-type-names { inst types names } -body {
 	arec::typedef blink {
 	    int 	count
 	    int 	bunk
 	    double  chunk
 	}
-	blink create blonk 4
 
-	blonk set count 4
-	blonk set bunk  4
-	blonk set chunk 3.3
+	blink create blonk 1
 
-	blonk set 0 count 6
-	blonk set 3 chunk 5.5
-
-
-	blonk get
+	blonk type names
     } -cleanup { rename blonk {}; rename blink {}
-    } -result {{6 4 3.3} {4 4 3.3} {4 4 3.3} {4 4 5.5}}
-}
+    } -result {count bunk chunk}
+
+::tcltest::test inst-type-types { inst type types } -body {
+	arec::typedef blink {
+	    int 	count
+	    int 	bunk
+	    double  chunk
+	}
+
+	blink create blonk 1
+
+	blonk type types
+    } -cleanup { rename blonk {}; rename blink {}
+    } -result {int int double}
 
 
 
