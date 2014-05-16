@@ -16,9 +16,9 @@ proc iota { fr to { in 1 } } {
 ::tcltest::configure -testdir [file dirname [file normalize [info script]]] -singleproc 1  ; # -verbose bps
 
 ::tcltest::test rec-dtype-size  { dtype size     } -body { arec::type  size   }		  -result [arec::ARecTypeSize]
-::tcltest::test rec-dtype-types { dtype types    } -body { arec::type types   }  	  -result {Tcl_Obj* long long long long long long long long long long long long long}
-::tcltest::test rec-dtype-types { dtype types    } -body { arec::type names   }  	  -result {name size align stype nfield afield fields set get shadow inst nmethod amethod methods}
-::tcltest::test rec-dtype-types { dtype types    } -body { arec::type fields  }  	  -result {Tcl_Obj* name long size long align long stype long nfield long afield long fields long set long get long shadow long inst long nmethod long amethod long methods}
+::tcltest::test rec-dtype-types { dtype types    } -body { arec::type types   }  	  -result {Tcl_Obj* long long long long long long long long long long}
+::tcltest::test rec-dtype-types { dtype types    } -body { arec::type names   }  	  -result {name size align stype nfield afield fields set get shadow inst}
+::tcltest::test rec-dtype-types { dtype types    } -body { arec::type fields  }  	  -result {Tcl_Obj* name long size long align long stype long nfield long afield long fields long set long get long shadow long inst}
 
 
 set Ps [arec::PtrSize]
@@ -28,31 +28,34 @@ set La [arec::LngAlign]
 set Ds [arec::DblSize]
 set Da [arec::DblAlign]
 
-::tcltest::test rec-dtype-size     { dtype size     } -returnCodes 1 -body { arec::types } -result {	::arec::types type  
-	::arec::types size  
-	::arec::types length  
-	::arec::types set  field value ...
-	::arec::types setdict  field value ...
-	::arec::types setlist  field value ...
-	::arec::types get  ?field? ...
-	::arec::types getlist  ?field? ...
-	::arec::types getdict  ?field? ...
-	::arec::types getbytes  
-	::arec::types getptr  
-	::arec::types setbytes  
-	::arec::types delete  
-::arec::types no method?}
-::tcltest::test rec-dtype-size     { dtype size     } -body { arec::types length } 	  		   -result 12
-::tcltest::test rec-dtype-types    { dtype types    } -body { arec::types 0 end get name  }  		   -result {char uchar short ushort int uint long ulong float double string Tcl_Obj*}
-::tcltest::test rec-dtypes-get     { dtypes get     } -body { arec::types 0 end get     name size align
-	} -result [subst {{char 1 1} {uchar 1 1} {short 2 2} {ushort 2 2} {int 4 4} {uint 4 4} {long $Ls $La} {ulong $Ls $La} {float 4 4} {double $Ds $Da} {string $Ps $Pa} {Tcl_Obj* $Ps $Pa}}]
-::tcltest::test rec-dtypes-getlist { dtypes getlist } -body { arec::types 0 end getlist name size align
-	} -result [subst {{char 1 1} {uchar 1 1} {short 2 2} {ushort 2 2} {int 4 4} {uint 4 4} {long $Ls $La} {ulong $Ls $La} {float 4 4} {double $Ds $Da} {string $Ps $Pa} {Tcl_Obj* $Ps $Pa}}]
-::tcltest::test rec-dtypes-getdict { dtypes getdict } -body { arec::types 0 end getdict name size align
-	} -result [subst {{name char size 1 align 1} {name uchar size 1 align 1} {name short size 2 align 2} {name ushort size 2 align 2} {name int size 4 align 4} {name uint size 4 align 4} {name long size $Ls align $La} {name ulong size $Ls align $La} {name float size 4 align 4} {name double size $Ds align $Da} {name string size $Ps align $Pa} {name Tcl_Obj* size $Ps align $Pa}}]
+if 0 {
+    ::tcltest::test rec-dtype-size     { dtype size     } -returnCodes 1 -body { arec::types } -result {	::arec::types type  
+	    ::arec::types size  
+	    ::arec::types length  
+	    ::arec::types set  field value ...
+	    ::arec::types setdict  field value ...
+	    ::arec::types setlist  field value ...
+	    ::arec::types get  ?field? ...
+	    ::arec::types getlist  ?field? ...
+	    ::arec::types getdict  ?field? ...
+	    ::arec::types getbytes  
+	    ::arec::types getptr  
+	    ::arec::types setbytes  
+	    ::arec::types delete  
+    ::arec::types no method?}
+}
+
+::tcltest::test rec-types-length   { dtype size     } -body { arec::types length } 	  		   -result 13
+::tcltest::test rec-types-names    { dtype types    } -body { arec::types get 0 end name  }  		   -result {char uchar short ushort int uint long ulong float double string char* Tcl_Obj*}
+::tcltest::test rec-dtypes-get     { dtypes get     } -body { arec::types get 0 end name size align
+	} -result [subst {{char 1 1} {uchar 1 1} {short 2 2} {ushort 2 2} {int 4 4} {uint 4 4} {long $Ls $La} {ulong $Ls $La} {float 4 4} {double $Ds $Da} {string $Ps $Pa} {char* $Ps $Pa} {Tcl_Obj* $Ps $Pa}}]
+::tcltest::test rec-dtypes-getlist { dtypes getlist } -body { arec::types getlist 0 end name size align
+	} -result [subst {{char 1 1} {uchar 1 1} {short 2 2} {ushort 2 2} {int 4 4} {uint 4 4} {long $Ls $La} {ulong $Ls $La} {float 4 4} {double $Ds $Da} {string $Ps $Pa} {char* $Ps $Pa} {Tcl_Obj* $Ps $Pa}}]
+::tcltest::test rec-dtypes-getdict { dtypes getdict } -body { arec::types getdict 0 end name size align
+	} -result [subst {{name char size 1 align 1} {name uchar size 1 align 1} {name short size 2 align 2} {name ushort size 2 align 2} {name int size 4 align 4} {name uint size 4 align 4} {name long size $Ls align $La} {name ulong size $Ls align $La} {name float size 4 align 4} {name double size $Ds align $Da} {name string size $Ps align $Pa} {name char* size $Ps align $Pa} {name Tcl_Obj* size $Ps align $Pa}}]
 
 
-foreach type [arec::types 0 end get name] reply { 1 1 1 1 1 1 1 1 1.0 1.0 1 } {
+foreach type [arec::types get name] reply { 1 1 1 1 1 1 1 1 1.0 1.0 1 1 } {
     if { $type eq "Tcl_Obj*" } { continue }
 
     ::tcltest::test rec-$type "each type: $type" -body {
@@ -65,28 +68,31 @@ foreach type [arec::types 0 end get name] reply { 1 1 1 1 1 1 1 1 1.0 1.0 1 } {
     } -result $reply
 }
 
-
-foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
-    ::tcltest::test rec-$i { create type } -body {
+::tcltest::test inst-type-names { inst types names } -body {
 	arec::typedef blink {
 	    int 	count
 	    int 	bunk
 	    double  chunk
 	}
-	blink create blonk 4
 
-	blonk 0 end set count 4
-	blonk 0 end set bunk  4
-	blonk 0 end set chunk 3.3
+	blink create blonk 1
 
-	blonk 0 set count 6
-	blonk 3 set chunk 5.5
-
-
-	blonk 0 end get
+	blonk type names
     } -cleanup { rename blonk {}; rename blink {}
-    } -result {{6 4 3.3} {4 4 3.3} {4 4 3.3} {4 4 5.5}}
-}
+    } -result {count bunk chunk}
+
+::tcltest::test inst-type-types { inst type types } -body {
+	arec::typedef blink {
+	    int 	count
+	    int 	bunk
+	    double  chunk
+	}
+
+	blink create blonk 1
+
+	blonk type types
+    } -cleanup { rename blonk {}; rename blink {}
+    } -result {int int double}
 
 
 
@@ -99,17 +105,16 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
 
     blink create blonk 5
 
-    blonk 0 end set a 3.3
-    blonk 0 end set b 3
-    blonk 0 end set c 5.5
+    blonk set 0 end a 3.3
+    blonk set 0 end b 3
+    blonk set 0 end c 5.5
 
+    blonk set end+1 a 6
+    blonk set end+1 a 7
+    blonk set end+1 a 8
+    blonk set end+1 a 9
 
-    blonk end+1 set a 6
-    blonk end+1 set a 7
-    blonk end+1 set a 8
-    blonk end+1 set a 9
-
-    blonk 0 end get
+    blonk get
 } -cleanup { rename blonk {}; rename blink {}
 } -result  "[lrepeat 5 {3.3 3 5.5}] {6.0 0 0.0} {7.0 0 0.0} {8.0 0 0.0} {9.0 0 0.0}"
 
@@ -121,14 +126,16 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
     }
 
     blink create blonk 5
-    blonk 0 end set a 1 b 2 c 3
-    blonk 0 end set [blonk 0 end get]
+    blink create clonk 5
 
-    blonk 0 end get
-} -cleanup { rename blonk {}; rename blink {}
+    blonk set 0 end a 1 b 2 c 3
+    clonk set 0 end [blonk get]
+
+    clonk get
+} -cleanup { rename blonk {}; rename blink {}; rename clonk {} 
 } -result {{1.0 2 3.0} {1.0 2 3.0} {1.0 2 3.0} {1.0 2 3.0} {1.0 2 3.0}}
 
-::tcltest::test setdict { sedict-1 } -body {
+::tcltest::test setdict { setdict-1 } -body {
     arec::typedef blink {
 	double a
 	int    b
@@ -136,14 +143,19 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
     }
 
     blink create blonk 5
-    blonk 0 end set a 1 b 2 c 3
-    blonk 0 end setdict [blonk 0 end getdict]
+    blink create clonk 5
 
-    blonk 0 end getdict
-} -cleanup { rename blonk {}; rename blink {}
+    blonk set a 1 b 2 c 3
+
+    clonk setdict [blonk getdict 0 end]
+puts [blonk getdict]
+puts [clonk getdict]
+
+    clonk getdict
+} -cleanup { rename blonk {}; rename blink {};  rename clonk {}
 } -result {{a 1.0 b 2 c 3.0} {a 1.0 b 2 c 3.0} {a 1.0 b 2 c 3.0} {a 1.0 b 2 c 3.0} {a 1.0 b 2 c 3.0}}
 
-::tcltest::test setlist { selist-1 } -body {
+::tcltest::test setlist { setlist-1 } -body {
     arec::typedef blink {
 	double a
 	int    b
@@ -151,14 +163,14 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
     }
 
     blink create blonk 5
-    blonk 0 end set a 1 b 2 c 3
-    blonk 0 end setlist [blonk 0 end getlist]
+    blink create clonk 5
 
-    blonk 0 end setlist a b {{1 4} {2 8} {3 12} {4 16} {5 20}}
+    blonk set a 1 b 2 c 3
+    clonk setlist [blonk getlist 0 end]
 
-    blonk 0 end getlist
-} -cleanup { rename blonk {}; rename blink {}
-} -result {{1.0 4 3.0} {2.0 8 3.0} {3.0 12 3.0} {4.0 16 3.0} {5.0 20 3.0}}
+    clonk getlist
+} -cleanup { rename blonk {}; rename blink {}; rename clonk {}
+} -result {{1.0 2 3.0} {1.0 2 3.0} {1.0 2 3.0} {1.0 2 3.0} {1.0 2 3.0}}
 
 ::tcltest::test alloc { alloc-1 } -body {
     arec::typedef blink {
@@ -170,12 +182,12 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
     blink create blonk 0
 
     foreach i [iota 0 1000] {
-	blonk $i set a 1 b 2 c 3
+	blonk set $i a 1 b 2 c 3
     }
 } -cleanup { rename blonk {}; rename blink {}
 } -result {}
 
-::tcltest::test setlist { selist-1 } -body {
+::tcltest::test setlist { setlist-2 } -body {
     arec::typedef blink {
 	double a
 	int    b
@@ -183,10 +195,10 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
     }
 
     blink create blonk 5
-    lappend reply [blonk 1 get a]
-    lappend reply [blonk 1 get a b]
-    lappend reply [blonk 1 2 get a]
-    lappend reply [blonk 1 2 get a b]
+    lappend reply [blonk get 1 a]
+    lappend reply [blonk get 1 a b]
+    lappend reply [blonk get 1 2 a]
+    lappend reply [blonk get 1 2 a b]
 
     set reply
 } -cleanup { rename blonk {}; rename blink {}
@@ -201,13 +213,13 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
 
     blink create blonk 1
 
-    blonk 0 set a 4.5
-    blonk 0 get a
+    blonk set 0 a 4.5
+    blonk get 0 a
 
 } -cleanup { rename blonk {}; rename blink {}
 } -result {4.5}
 
-::tcltest::test union { union-get } -body {
+::tcltest::test union-get { union-get } -body {
     arec::typedef union blink {
 	double a
 	int    b
@@ -216,18 +228,18 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
 
     blink create blonk 1
 
-    blonk 0 set a 4.5
-    set 1 [blonk 0 get]
+    blonk set 0 a 4.5
+    set 1 [blonk get 0]
 
-    blonk 0 set b 4
-    set 2 [blonk 0 get]
+    blonk set 0 b 4
+    set 2 [blonk get 0]
 
     list $1 $2
 
 } -cleanup { rename blonk {}; rename blink {}
 } -result {4.5 4}
 
-::tcltest::test union { union-crunch } -body {
+::tcltest::test union-crunch { union-crunch } -body {
     arec::typedef union blink {
 	char    c
 	int     i
@@ -251,16 +263,16 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
 
     foreach i [iota 0 100] {
 	foreach type { c s i l uc us ui ul f d } {
-	    blonk 0 set $type 4
-	    blonk 0 set xchr foo
+	    blonk set 0 $type 4
+	    blonk set 0 xchr foo
 	}
 	foreach type { c s i l uc us ui ul f d } {
-	    blonk 0 set $type 4
-	    blonk 0 set xstr foo
+	    blonk set 0 $type 4
+	    blonk set 0 xstr foo
 	}
 	foreach type { c s i l uc us ui ul f d } {
-	    blonk 0 set $type 4
-	    blonk 0 set xobj foo
+	    blonk set 0 $type 4
+	    blonk set 0 xobj foo
 	}
     }
 
@@ -277,15 +289,15 @@ foreach i { 0 1 2 3 4 5 6 7 8 9 0 } {
 
     Thing create things 11
 
-    things 0 set x 0
-    things 1 set x 1
-    things 2 set x 2
-    things 3 set x 3
-    things 4 set x 4
+    things set 0 x 0
+    things set 1 x 1
+    things set 2 x 2
+    things set 3 x 3
+    things set 4 x 4
 
-    things 1 delete
+    things delete 1
 
-    things 0 3 get x
+    things get 0 3 x
 
 } -cleanup { rename things {}; rename Thing {}
 } -result {0.0 2.0 3.0 4.0}

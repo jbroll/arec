@@ -7,6 +7,7 @@ package require arec
 package require arec-struct
 
 source ../jbr.tcl/perm.tcl
+source ../jbr.tcl/func.tcl
 
 proc enumerate { list } {
     set i 0
@@ -18,8 +19,7 @@ proc enumerate { list } {
     set reply
 }
 
-set Types [arec::types get name]
-set Sizes [arec::types get size]
+set Types [lremove [arec::types get name] char*]
 
 array set TMap {
     char	char
@@ -33,13 +33,10 @@ array set TMap {
     float	float
     double	double
     string	char*
+    char*	char*
     Tcl_Obj*	Tcl_Obj*
     Tcl_Obj	Tcl_Obj*
 }
-
-#foreach type $Types size $Sizes {
-#    puts "$size : [sizeof_$type]"
-#}
 
 foreach type $Types {
     set Type [regsub {[^_a-zA-Z]} $type {}]
