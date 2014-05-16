@@ -583,7 +583,7 @@ int ARecInstObjCmd(data, ip, objc, objv)
 	return ARecCallAction(ip, path, npath, objv, objc, ARecSetListAction, result);
     }
 
-    if ( path[0].first < 0 || + path[0].last > path[0].inst->nrecs ) {			// All commands below here do not allow extension
+    if ( path[0].first < 0 || + path[0].last >= path[0].inst->nrecs ) {			// All commands below here do not allow extension
 	char index[50];
 	snprintf(index, 50, " %d %d : %d ", path[0].first, path[0].last, path[0].inst->nrecs);
 
