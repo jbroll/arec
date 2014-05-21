@@ -211,7 +211,7 @@ puts [clonk getdict]
 	double c
     }
 
-    blink create blonk 1
+    blink create blonk 3
 
     blonk set 0 a 4.5
     blonk get 0 a
