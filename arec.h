@@ -95,7 +95,7 @@ int ARecSetInt(   Tcl_Interp *ip, ARecType *type, Tcl_Obj *obj, void *here, int 
 
 int ARecNewInst(Tcl_Interp *interp, int objc, Tcl_Obj **objv, ARecType *type);
 int ARecSetFromArgs(Tcl_Interp *interp, ARecType *type, char *recs, int m, int objc, Tcl_Obj *const*objv, int flags);
-int ARecSetFromList(Tcl_Interp *interp, ARecType *type, char *recs, int m, int objc, Tcl_Obj *const*objv);
+int ARecSetFromList(Tcl_Interp *interp, ARecType *type, char *recs, int m, int objc, Tcl_Obj *const*objv, int flags);
 int ARecSetFromDict(Tcl_Interp *interp, ARecType *type, char *recs, int m, int objc, Tcl_Obj *const*objv);
 
 ARecType *ARecTypeAddType(ARecField *types, Tcl_Obj *nameobj, int size, int align, int stype, ARecSetFunc set, ARecGetFunc get);

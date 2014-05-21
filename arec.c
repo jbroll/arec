@@ -442,7 +442,7 @@ int ARecSetListAction(void *data, Tcl_Interp *ip, int objc, Tcl_Obj *const*objv)
     ARecPath *path = (ARecPath *) data;
 
     if ( objc == 1 ) {
-	return ARecSetFromList(ip, path->inst->type, path->recs+path->first*path->inst->type->size, path->last-path->first+1, 1, objv);
+	return ARecSetFromList(ip, path->inst->type, path->recs+path->first*path->inst->type->size, path->last-path->first+1, 1, objv, path->array ? AREC_ISLIST : 0);
     } else {
 	return ARecSetFromArgs(ip, path->inst->type, path->recs+path->first*path->inst->type->size, path->last-path->first+1, objc, objv, 1);
     }
@@ -1019,7 +1019,7 @@ int ARecSetFromDict(Tcl_Interp *ip, ARecType *type, char *recs, int n, int objc,
     return TCL_OK;
 }
 
-int ARecSetFromList(Tcl_Interp *ip, ARecType *type, char *inst, int n, int objc, Tcl_Obj *const*objv)
+int ARecSetFromList(Tcl_Interp *ip, ARecType *type, char *inst, int n, int objc, Tcl_Obj *const*objv, int flags)
 {
 	ARecField *table = type->field;
 	Tcl_Obj  	 *result = Tcl_GetObjResult(ip);
@@ -1040,7 +1040,7 @@ int ARecSetFromList(Tcl_Interp *ip, ARecType *type, char *inst, int n, int objc,
 	return TCL_ERROR;
     }
 
-    if ( Tcl_ListObjGetElements(ip, objv[objc - 1], &objc, (Tcl_Obj ***) &objv) == TCL_ERROR ) {
+    if ( (flags & AREC_ISLIST) && Tcl_ListObjGetElements(ip, objv[objc - 1], &objc, (Tcl_Obj ***) &objv) == TCL_ERROR ) {
 	Tcl_Free((void *) map);
 	return TCL_ERROR;
     }
