@@ -557,16 +557,17 @@ int ARecInstObjCmd(data, ip, objc, objv)
     char *actionName = Tcl_GetString(actionObj);
 
     if ( !strcmp(actionName, "length") && ( objc == 0 || objc == 1 ) ) {
+
 	int n;
 
-	if ( objc == 3 ) {
+	if ( objc == 1 ) {
 	    if ( npath > 1 ) {
 		Tcl_AppendStringsToObj(result , Tcl_GetString(inst->type->nameobj), " cannot set inner length ", NULL);
 		
 		return TCL_ERROR;
 	    }
 
-	    if ( Tcl_GetIntFromObj(ip, objv[2], &n) != TCL_OK  ) { return TCL_ERROR; }
+	    if ( Tcl_GetIntFromObj(ip, objv[0], &n) != TCL_OK  ) { return TCL_ERROR; }
 
 	    ARecRealloc(this, n, 0);
 	    inst->nrecs = n;
