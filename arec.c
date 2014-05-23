@@ -621,17 +621,33 @@ int ARecInstObjCmd(data, ip, objc, objv)
     } else if ( !strcmp(actionName, "getlist")  ) {
 	return ARecCallAction(ip, path, npath, objv, objc, ARecGetListAction, 1, slice);
     } else if ( !strcmp(actionName, "getbytes")  ) {
-	Tcl_SetByteArrayObj(result, (unsigned char *) path->recs+this->type->size*path->first, this->type->size * path->first-path->last+1);
+	Tcl_SetByteArrayObj(result, (unsigned char *) path->recs+path[npath-1].first*path[npath-1].inst->type->size
+						   , (path[npath-1].last-path[npath-1].first+1)*path[npath-1].inst->type->size);
 
 	return TCL_OK;
     } else if ( !strcmp(actionName, "setbytes")  ) {
-	int nbytes;
-	unsigned char *bytes = Tcl_GetByteArrayFromObj(objv[2], &nbytes);
-	memcpy(path->recs+this->type->size*path->first, bytes, Max(nbytes, this->type->size * path->first-path->last+1));
+	int           nbytes;
+	unsigned char *bytes = Tcl_GetByteArrayFromObj(objv[0], &nbytes);
+
+
+	if ( nbytes % path[npath-1].inst->type->size != 0
+	 || ( npath > 1 
+	     && nbytes != (path[npath-1].last-path[npath-1].first+1)*path[npath-1].inst->type->size ) 
+	   ) {
+	    Tcl_AppendStringsToObj(result , Tcl_GetString(path[npath-1].inst->type->nameobj), " set bytes with incompatible data block size ", NULL);
+
+	    return TCL_ERROR;
+	}
+
+	if ( npath == 1 ) {
+	    path[0].recs = ARecRealloc(path[0].inst, path[0].first+nbytes/path[0].inst->type->size, 0);
+	}
+
+	memcpy(path[npath-1].recs+path[npath-1].inst->type->size*path[npath-1].first, bytes, nbytes);
 
 	return TCL_OK;
     } else if ( !strcmp(actionName, "getptr")  ) {
-	Tcl_SetLongObj(result, (long) path->recs+this->type->size*path->first);
+	Tcl_SetLongObj(result, (long) path->recs+path->first*path->inst->type->size);
 
 	return TCL_OK;
     } else if ( !strcmp(actionName, "delete")  ) {
