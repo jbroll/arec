@@ -846,6 +846,7 @@ void ARecTypeAddField1(ARecType *type, Tcl_Obj *nameobj, int length, int array, 
 	size	= Max(size, ARecPadd(field->size*length, field->align));
     }
     type->size	= ARecPadd(size, maxx);
+    type->align = maxx;
 
     type->nfield++;
     memcpy(type->shadow, type, sizeof(ARecType));
