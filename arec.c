@@ -264,11 +264,33 @@ ARecType *ARecLookupType(Tcl_Obj *nameobj)
 }
 
 
+void ARecFreePointers(ARecField *inst, void *recs) {
+    int i;
+
+    for ( i = 0; i < inst->type->nfield; i++ ) {
+	if ( inst->type->field[i].type->nfield && inst->type->field[i].type->stype == AREC_STRUCT ) {
+	    ARecFreePointers(inst, recs);
+	} else {
+	    if ( inst->type->field[i].type->set == ARecSetTclObj ) {
+		ARecSetTclObj(NULL, inst->type->field[i].type, NULL, recs+inst->type->field[i].offset, 0, 0, NULL, 0);
+	    }
+	    if ( inst->type->field[i].type->set == ARecSetString ) {
+		ARecSetString(NULL, inst->type->field[i].type, NULL, recs+inst->type->field[i].offset, 0, 0, NULL, 0);
+	    }
+	}
+
+	recs += inst->type->size;
+    }
+}
+
+
 int ARecDelInst(ClientData data)
 {
         ARecField *inst = (ARecField *) data;
 
     Tcl_DecrRefCount(inst->nameobj);
+
+    //ARecFreePointers(inst, inst->recs);
 
     Tcl_Free((void *) inst->recs);
     Tcl_Free((void *) inst);
@@ -984,18 +1006,11 @@ int ARecSetFromArgs(Tcl_Interp *ip, ARecType *type, char *recs, int n, int objc,
 			, NULL);
 		return TCL_ERROR;
 	    }
-	    if ( type->stype > 0 ) {
-		ARecSetField(ip, &type->field[type->stype-1], recs, NULL);			// Union clear old value.
-	    }
 
 	    if ( ARecSetField(ip, field, recs, objv[i+1]) == TCL_ERROR ) {
 		Tcl_AppendStringsToObj(result , "type \"", Tcl_GetString(type->nameobj) , "\" cannot set field \""
 			, Tcl_GetString(objv[i+0]), "\" from \"" , Tcl_GetString(objv[i+1]) , "\"" , NULL);
 		return TCL_ERROR;
-	    } else {
-		if ( type->stype != AREC_STRUCT ) {
-		    type->stype = (field - type->field) + 1;				// Union record current field
-		}
 	    }
 	}
 
