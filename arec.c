@@ -269,7 +269,7 @@ void ARecFreePointers(ARecField *inst, void *recs) {
 
     for ( i = 0; i < inst->type->nfield; i++ ) {
 	if ( inst->type->field[i].type->nfield && inst->type->field[i].type->stype == AREC_STRUCT ) {
-	    ARecFreePointers(inst, recs);
+	    ARecFreePointers(&inst->type->field[i], recs+inst->type->field[i].offset);
 	} else {
 	    if ( inst->type->field[i].type->set == ARecSetTclObj ) {
 		ARecSetTclObj(NULL, inst->type->field[i].type, NULL, recs+inst->type->field[i].offset, 0, 0, NULL, 0);
@@ -290,7 +290,7 @@ int ARecDelInst(ClientData data)
 
     Tcl_DecrRefCount(inst->nameobj);
 
-    //ARecFreePointers(inst, inst->recs);
+    ARecFreePointers(inst, inst->recs);
 
     Tcl_Free((void *) inst->recs);
     Tcl_Free((void *) inst);
