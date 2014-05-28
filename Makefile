@@ -52,6 +52,4 @@ lib/arec-struct/macosx-ix86/arec-struct.dylib : arec-struct.tcl
 	#mv lib/arec-struct/macosx-x86_32 lib/arec-struct/macosx-ix86
 
 
-
-
 FORCE:

@@ -219,26 +219,6 @@ puts [clonk getdict]
 } -cleanup { rename blonk {}; rename blink {}
 } -result {4.5}
 
-::tcltest::test union-get { union-get } -body {
-    arec::typedef union blink {
-	double a
-	int    b
-	double c
-    }
-
-    blink create blonk 1
-
-    blonk set 0 a 4.5
-    set 1 [blonk get 0]
-
-    blonk set 0 b 4
-    set 2 [blonk get 0]
-
-    list $1 $2
-
-} -cleanup { rename blonk {}; rename blink {}
-} -result {4.5 4}
-
 ::tcltest::test union-crunch { union-crunch } -body {
     arec::typedef union blink {
 	char    c
@@ -253,10 +233,6 @@ puts [clonk getdict]
 
 	float   f
 	double  d
-
-	char*    xchr
-	string   xstr
-	Tcl_Obj* xobj
     }
 
     blink create blonk 1
@@ -264,15 +240,12 @@ puts [clonk getdict]
     foreach i [iota 0 100] {
 	foreach type { c s i l uc us ui ul f d } {
 	    blonk set 0 $type 4
-	    blonk set 0 xchr foo
 	}
 	foreach type { c s i l uc us ui ul f d } {
 	    blonk set 0 $type 4
-	    blonk set 0 xstr foo
 	}
 	foreach type { c s i l uc us ui ul f d } {
 	    blonk set 0 $type 4
-	    blonk set 0 xobj foo
 	}
     }
 
