@@ -265,20 +265,21 @@ ARecType *ARecLookupType(Tcl_Obj *nameobj)
 
 
 void ARecFreePointers(ARecField *inst, void *recs) {
-    int i;
+    int i, j;
 
-    for ( i = 0; i < inst->type->nfield; i++ ) {
-	if ( inst->type->field[i].type->nfield && inst->type->field[i].type->stype == AREC_STRUCT ) {
-	    ARecFreePointers(&inst->type->field[i], recs+inst->type->field[i].offset);
-	} else {
-	    if ( inst->type->field[i].type->set == ARecSetTclObj ) {
-		ARecSetTclObj(NULL, inst->type->field[i].type, NULL, recs+inst->type->field[i].offset, 0, 0, NULL, 0);
-	    }
-	    if ( inst->type->field[i].type->set == ARecSetString ) {
-		ARecSetString(NULL, inst->type->field[i].type, NULL, recs+inst->type->field[i].offset, 0, 0, NULL, 0);
+    for ( j = 0; j < inst->nrecs; j++ ) {
+	for ( i = 0; i < inst->type->nfield; i++ ) {
+	    if ( inst->type->field[i].type->nfield && inst->type->field[i].type->stype == AREC_STRUCT ) {
+		ARecFreePointers(&inst->type->field[i], recs+inst->type->field[i].offset);
+	    } else {
+		if ( inst->type->field[i].type->set == ARecSetTclObj ) {
+		    ARecSetTclObj(NULL, inst->type->field[i].type, NULL, recs+inst->type->field[i].offset, 0, 0, NULL, 0);
+		}
+		if ( inst->type->field[i].type->set == ARecSetString ) {
+		    ARecSetString(NULL, inst->type->field[i].type, NULL, recs+inst->type->field[i].offset, 0, 0, NULL, 0);
+		}
 	    }
 	}
-
 	recs += inst->type->size;
     }
 }
