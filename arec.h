@@ -62,6 +62,8 @@ typedef struct _ARecType {
     ARecSetFunc	set;
     ARecGetFunc	get;
 
+    int		count;
+
     struct _ARecType 	*shadow;
     struct _ARecField 	*instances;
 } ARecType;

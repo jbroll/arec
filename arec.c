@@ -328,7 +328,26 @@ int ARecTypeObjCmd(data, ip, objc, objv)
     ARecType *type = (ARecType *) data;
     Tcl_Obj *result = Tcl_GetObjResult(ip);
 
-    ARecCmd(ip, type, "create", " ?inst? ...", objc >= 3, objc, objv,
+    ARecCmd(ip, type, "new", "...", objc >= 2 && objc <= 3, objc, objv,
+	    char objname[50];
+
+	Tcl_Obj *objn[4];
+
+	snprintf(objname, 50, "%s::%d", Tcl_GetString(type->nameobj), type->count);
+
+	type->count++;
+
+	objn[0] = objv[0];
+	objn[1] = objv[1];
+	objn[2] = Tcl_NewStringObj(objname, -1);
+
+	if ( objc == 3 ) {
+	    objn[3] = objv[2];
+	}
+
+	return ARecNewInst(ip, ++objc, objn, data);
+    );
+    ARecCmd(ip, type, "create", " ?inst? ...", objc >= 3 && objc <= 4, objc, objv,
 	return ARecNewInst(ip, objc, objv, data);
     );
     ARecCmd(ip, type, "size", "", objc >= 1, objc, objv,
@@ -752,7 +771,7 @@ int ARecNewInst(Tcl_Interp *ip, int objc, Tcl_Obj **objv, ARecType *type)
 	Tcl_Obj     *result = Tcl_GetObjResult(ip);
 	int	     n = 1;
 
-    if ( objc == 4 ) {
+    if ( objc >= 4 ) {
 	if ( Tcl_GetIntFromObj(ip, objv[3], &n) != TCL_OK  ) {
 	    Tcl_SetStringObj(result, "cannot convert size arg to int", -1);				\
 	    return TCL_ERROR;
