@@ -733,6 +733,7 @@ int ARecInstObjCmd(data, ip, objc, objv)
 
 	Tcl_DecrRefCount(objv[0]);
 	objv[0] = Tcl_NewStringObj(cmdName, -1);
+	Tcl_IncrRefCount(objv[0]);
 
 	return ARecCallAction(ip, path, npath, objv, objc, cmdInfo.objProc, 1, slice);
     }
